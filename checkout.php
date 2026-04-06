@@ -1405,6 +1405,14 @@ if (!$isLoggedIn) {
                                     </button>
                                 </div>
                             </div>
+                            <div class="mt-3 pt-3 border-t border-dashed border-gray-200">
+                                <p class="text-xs text-gray-500 mb-2">Promo lookup (tests the same server check as Apply):</p>
+                                <div class="flex gap-2 flex-wrap">
+                                    <input type="text" id="coupon-explore-q" placeholder="Code or search" class="flex-1 min-w-[140px] px-3 py-2 border border-gray-200 rounded-lg text-xs">
+                                    <button type="button" onclick="searchCouponsExplore()" class="px-3 py-2 bg-gray-100 text-gray-800 rounded-lg text-xs font-medium">Lookup</button>
+                                </div>
+                                <pre id="coupon-explore-result" class="hidden mt-2 text-[10px] bg-slate-900 text-slate-100 p-2 rounded-lg overflow-x-auto max-h-48"></pre>
+                            </div>
                         </div>
 
                         <!-- Cost Breakdown -->
@@ -1950,7 +1958,7 @@ if (!$isLoggedIn) {
             const codeInput = document.getElementById('discount-code');
             const applyBtn = document.getElementById('apply-discount-btn');
             const errorDiv = document.getElementById('discount-error');
-            const code = codeInput.value.trim().toUpperCase();
+            const code = codeInput.value.trim();
             
             if (!code) {
                 errorDiv.textContent = 'Please enter a discount code';
@@ -2010,6 +2018,24 @@ if (!$isLoggedIn) {
             } finally {
                 applyBtn.disabled = false;
                 applyBtn.innerHTML = originalBtnText;
+            }
+        }
+
+        async function searchCouponsExplore() {
+            const q = document.getElementById('coupon-explore-q')?.value ?? '';
+            const sub = state.subtotal > 0 ? state.subtotal : 100;
+            const pre = document.getElementById('coupon-explore-result');
+            if (!pre) return;
+            pre.classList.remove('hidden');
+            pre.textContent = 'Loading...';
+            try {
+                const response = await fetch(`${API_BASE}/coupons.php?code=${encodeURIComponent(q)}&subtotal=${sub}`, {
+                    credentials: 'include'
+                });
+                const j = await response.json();
+                pre.textContent = JSON.stringify(j, null, 2);
+            } catch (e) {
+                pre.textContent = String(e);
             }
         }
         
