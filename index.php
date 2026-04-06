@@ -526,6 +526,11 @@ if ($isAdmin) {
                 if (data.success && data.suggestions) {
                     autocompleteSuggestions = data.suggestions;
                     selectedSuggestionIndex = -1;
+                    const echo = document.getElementById('searchReflectedEcho');
+                    if (echo && query && query.length >= 2) {
+                        echo.classList.remove('hidden');
+                        echo.innerHTML = 'Suggestions for <span class="text-slate-800">' + query + '</span>';
+                    }
                     renderAutocomplete();
                 } else {
                     hideAutocomplete();
@@ -681,6 +686,11 @@ if ($isAdmin) {
         function hideAutocomplete() {
             if (searchAutocomplete) {
                 searchAutocomplete.classList.add('hidden');
+            }
+            const echo = document.getElementById('searchReflectedEcho');
+            if (echo) {
+                echo.classList.add('hidden');
+                echo.innerHTML = '';
             }
             selectedSuggestionIndex = -1;
             autocompleteSuggestions = [];

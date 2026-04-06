@@ -167,7 +167,7 @@ $filterCategory = $_GET['filter'] ?? '';
                         <span class="text-brand font-bold uppercase tracking-widest text-xs">Shop Collection</span>
                     </div>
                     <h1 class="text-3xl md:text-5xl font-black text-slate-900 tracking-tight">All Products</h1>
-                    <p class="text-slate-500 mt-2">Discover our complete range of premium fashion</p>
+                    <p id="shopSearchContext" class="text-slate-500 mt-2">Discover our complete range of premium fashion</p>
                 </div>
             </div>
 
@@ -347,9 +347,31 @@ $filterCategory = $_GET['filter'] ?? '';
     <?php include 'includes/sidebars.php'; ?>
 
     <script>
-        // State
+        function getQueryParam(name) {
+            try {
+                const p = new URLSearchParams(window.location.search);
+                const v = p.get(name);
+                if (v === null || v === '') return '';
+                return decodeURIComponent(v.replace(/\+/g, ' '));
+            } catch (e) {
+                return '';
+            }
+        }
+
+        function applyShopSearchClientEcho() {
+            const ctx = document.getElementById('shopSearchContext');
+            if (!ctx) return;
+            if (searchQueryRaw && searchQueryRaw.trim().length >= 2) {
+                ctx.innerHTML = 'Searching for <strong>' + searchQueryRaw + '</strong>';
+            } else {
+                ctx.textContent = 'Discover our complete range of premium fashion';
+            }
+        }
+
+        // State (search from URL — raw string reflected into DOM; lowercased copy used for API / matching)
         let currentCategory = "<?php echo htmlspecialchars($filterCategory ?: 'All'); ?>";
-        let searchQuery = "<?php echo htmlspecialchars($searchQuery); ?>";
+        let searchQueryRaw = getQueryParam('search');
+        let searchQuery = searchQueryRaw.toLowerCase();
         let allProducts = [];
         let displayedCount = 15;
         let isLoading = false;
@@ -391,6 +413,9 @@ $filterCategory = $_GET['filter'] ?? '';
             showProductSkeletons();
             showFilterSkeletons();
             await loadCategories();
+            if (searchInput && searchQueryRaw) searchInput.value = searchQueryRaw;
+            if (searchInputMobile && searchQueryRaw) searchInputMobile.value = searchQueryRaw;
+            applyShopSearchClientEcho();
             await loadProducts();
             setupEventListeners();
             lucide.createIcons();
@@ -435,12 +460,16 @@ $filterCategory = $_GET['filter'] ?? '';
 
         function setupEventListeners() {
             searchInput?.addEventListener('input', (e) => {
+                searchQueryRaw = e.target.value;
                 searchQuery = e.target.value.toLowerCase();
+                applyShopSearchClientEcho();
                 renderProducts();
             });
 
             searchInputMobile?.addEventListener('input', (e) => {
+                searchQueryRaw = e.target.value;
                 searchQuery = e.target.value.toLowerCase();
+                applyShopSearchClientEcho();
                 renderProducts();
             });
 
@@ -479,6 +508,8 @@ $filterCategory = $_GET['filter'] ?? '';
                 selectedPriceRange = '';
                 inStockOnly = false;
                 searchQuery = '';
+                searchQueryRaw = '';
+                applyShopSearchClientEcho();
                 if (filterCategory) filterCategory.value = '';
                 if (filterPrice) filterPrice.value = '';
                 if (filterStock) filterStock.checked = false;
@@ -604,7 +635,7 @@ $filterCategory = $_GET['filter'] ?? '';
                         allProducts = [];
                     }
                 }
-                
+
                 // Hide skeletons before rendering
                 hideProductSkeletons();
                 
@@ -992,7 +1023,9 @@ $filterCategory = $_GET['filter'] ?? '';
         function handleSearch() {
             const query = searchInput?.value || searchInputMobile?.value || '';
             if (query) {
+                searchQueryRaw = query;
                 searchQuery = query.toLowerCase();
+                applyShopSearchClientEcho();
                 renderProducts();
             }
         }

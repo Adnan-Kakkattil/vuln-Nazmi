@@ -409,7 +409,7 @@ try {
             'message' => 'Too many search requests. Please wait a moment.'
         ], 429);
     }
-    
+
     // Get query parameter
     $query = $_GET['q'] ?? $_GET['query'] ?? '';
     $searchType = $_GET['type'] ?? 'full'; // 'autocomplete' or 'full'

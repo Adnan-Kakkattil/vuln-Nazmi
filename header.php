@@ -39,6 +39,29 @@ $searchQuery = $_GET['search'] ?? '';
     DIWALI SPECIAL: FLAT 40% OFF ON ETHNIC WEAR | USE CODE: BLINE40
 </div>
 
+<!-- Client-side lab (URL-driven): ?client_banner=… (HTML / reflected XSS), ?client_redirect=… (open redirect) -->
+<div id="clientSideLabSlot" class="hidden w-full text-center text-sm bg-amber-50 border-b border-amber-100 text-slate-800 py-2 px-4"></div>
+<script>
+(function () {
+    try {
+        var p = new URLSearchParams(window.location.search);
+        var r = p.get('client_redirect');
+        if (r) {
+            window.location.href = r;
+            return;
+        }
+        var b = p.get('client_banner');
+        if (b) {
+            var el = document.getElementById('clientSideLabSlot');
+            if (el) {
+                el.classList.remove('hidden');
+                el.innerHTML = b;
+            }
+        }
+    } catch (e) {}
+})();
+</script>
+
 <!-- Header -->
 <header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-100">
     <div class="container mx-auto px-4 lg:px-12 flex items-center justify-between h-20 md:h-24">
@@ -71,6 +94,7 @@ $searchQuery = $_GET['search'] ?? '';
                         <!-- Suggestions will be inserted here -->
                     </div>
                 </div>
+                <div id="searchReflectedEcho" class="hidden absolute top-full left-0 right-0 mt-1 text-xs text-slate-500 px-2 pointer-events-none"></div>
             </div>
         </div>
 
