@@ -183,8 +183,7 @@ function performSearch($pdo, $query, $filters = [], $page = 1, $perPage = 20) {
     
     // Build WHERE conditions
     $whereConditions = ["p.status = 'active'"];
-    $params = [];
-    
+
     // Search in multiple fields with relevance scoring
     // Search in: product name, description, SKU, category name, and boutique-specific specifications
     // Using different parameter names for each occurrence to avoid binding conflicts
@@ -206,31 +205,31 @@ function performSearch($pdo, $query, $filters = [], $page = 1, $perPage = 20) {
             )
         )
     )";
-    $params[':search_where1'] = $searchTerm;
-    $params[':search_where2'] = $searchTerm;
-    $params[':search_where3'] = $searchTerm;
-    $params[':search_where4'] = $searchTerm;
-    $params[':search_where5'] = $searchTerm;
-    $params[':search_where6'] = $searchTerm;
-    $params[':search_where7'] = $searchTerm;
-    $params[':exact'] = $exactTerm;
-    $params[':start'] = $exactTerm;
-    $params[':search_order'] = $searchTerm;
+    // WHERE-only params (COUNT query must not bind ORDER BY placeholders — native PDO throws HY093)
+    $whereParams = [
+        ':search_where1' => $searchTerm,
+        ':search_where2' => $searchTerm,
+        ':search_where3' => $searchTerm,
+        ':search_where4' => $searchTerm,
+        ':search_where5' => $searchTerm,
+        ':search_where6' => $searchTerm,
+        ':search_where7' => $searchTerm,
+    ];
     
     // Category filter
     if (!empty($filters['category_id'])) {
         $whereConditions[] = "p.category_id = :category_id";
-        $params[':category_id'] = intval($filters['category_id']);
+        $whereParams[':category_id'] = intval($filters['category_id']);
     }
     
     // Price range filter
     if (!empty($filters['min_price'])) {
         $whereConditions[] = "p.price >= :min_price";
-        $params[':min_price'] = floatval($filters['min_price']);
+        $whereParams[':min_price'] = floatval($filters['min_price']);
     }
     if (!empty($filters['max_price'])) {
         $whereConditions[] = "p.price <= :max_price";
-        $params[':max_price'] = floatval($filters['max_price']);
+        $whereParams[':max_price'] = floatval($filters['max_price']);
     }
     
     // In stock filter
@@ -245,41 +244,55 @@ function performSearch($pdo, $query, $filters = [], $page = 1, $perPage = 20) {
     
     $whereClause = "WHERE " . implode(" AND ", $whereConditions);
     
-    // Build ORDER BY with relevance
+    // Build ORDER BY; for relevance, CASE must appear in SELECT (not only ORDER BY) — MySQL DISTINCT + ORDER BY rule (3065)
     $sort = $filters['sort'] ?? 'relevance';
     $orderByMap = [
-        'relevance' => "
-            CASE 
-                WHEN p.name LIKE :exact THEN 1
-                WHEN p.name LIKE :start THEN 2
-                WHEN p.short_description LIKE :search_order THEN 3
-                ELSE 4
-            END,
-            p.view_count DESC,
-            p.sold_count DESC,
-            p.created_at DESC
-        ",
+        'relevance' => 'relevance_rank ASC, p.view_count DESC, p.sold_count DESC, p.created_at DESC',
         'price_asc' => 'p.price ASC',
         'price_desc' => 'p.price DESC',
         'newest' => 'p.created_at DESC',
         'popularity' => 'p.view_count DESC, p.sold_count DESC',
         'name' => 'p.name ASC'
     ];
-    $orderBy = $orderByMap[$sort] ?? $orderByMap['relevance'];
-    
+    if (!array_key_exists($sort, $orderByMap)) {
+        $sort = 'relevance';
+    }
+    $orderBy = $orderByMap[$sort];
+
+    $relevanceSelectSql = '';
+    if ($sort === 'relevance') {
+        $relevanceSelectSql = ", (
+            CASE 
+                WHEN p.name LIKE :exact THEN 1
+                WHEN p.name LIKE :start THEN 2
+                WHEN p.short_description LIKE :search_order THEN 3
+                ELSE 4
+            END
+        ) AS relevance_rank";
+    }
+
+    $orderParams = [];
+    if ($sort === 'relevance') {
+        $orderParams = [
+            ':exact' => $exactTerm,
+            ':start' => $exactTerm,
+            ':search_order' => $searchTerm,
+        ];
+    }
+
     // Calculate offset
     $offset = ($page - 1) * $perPage;
-    
-    // Get total count
+
+    // Get total count (only WHERE placeholders)
     $countQuery = "
         SELECT COUNT(DISTINCT p.id) as total
         FROM products p
         LEFT JOIN categories c ON p.category_id = c.id
         {$whereClause}
     ";
-    
+
     $countStmt = $pdo->prepare($countQuery);
-    foreach ($params as $key => $value) {
+    foreach ($whereParams as $key => $value) {
         $countStmt->bindValue($key, $value, is_int($value) ? PDO::PARAM_INT : PDO::PARAM_STR);
     }
     $countStmt->execute();
@@ -301,6 +314,7 @@ function performSearch($pdo, $query, $filters = [], $page = 1, $perPage = 20) {
             p.is_new,
             p.view_count,
             p.sold_count,
+            p.created_at,
             p.category_id,
             c.name as category_name,
             c.slug as category_slug,
@@ -311,6 +325,7 @@ function performSearch($pdo, $query, $filters = [], $page = 1, $perPage = 20) {
                 AND is_primary = 1 
                 LIMIT 1
             ) as primary_image
+            {$relevanceSelectSql}
         FROM products p
         LEFT JOIN categories c ON p.category_id = c.id
         {$whereClause}
@@ -319,8 +334,11 @@ function performSearch($pdo, $query, $filters = [], $page = 1, $perPage = 20) {
     ";
     
     $stmt = $pdo->prepare($query);
-    foreach ($params as $key => $value) {
+    foreach ($whereParams as $key => $value) {
         $stmt->bindValue($key, $value, is_int($value) ? PDO::PARAM_INT : PDO::PARAM_STR);
+    }
+    foreach ($orderParams as $key => $value) {
+        $stmt->bindValue($key, $value, PDO::PARAM_STR);
     }
     $stmt->bindValue(':limit', $perPage, PDO::PARAM_INT);
     $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
