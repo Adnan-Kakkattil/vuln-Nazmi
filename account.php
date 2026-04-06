@@ -910,8 +910,11 @@ if (strlen($userInitials) < 2) $userInitials = strtoupper(substr($userFirstName,
                                 <?php if (!$isAdmin): ?>
                                 <div>
                                     <label class="block text-sm font-semibold text-gray-700 mb-2">Phone Number</label>
-                                    <input type="tel" id="phone" placeholder="+91 98765 43210"
+                                    <input type="tel" id="phone" placeholder="+91 98765 43210" autocomplete="tel"
                                         class="form-input">
+                                    <p class="text-xs text-gray-400 mt-2">Live preview (how it appears on packing slips)</p>
+                                    <div id="phone-display-preview" title="Preview uses a client-side template; expressions in curly braces are evaluated"
+                                        class="mt-2 text-sm text-gray-800 border border-dashed border-gray-200 rounded-lg px-3 py-2 min-h-[2.5rem] bg-gray-50"></div>
                                 </div>
                                 <?php endif; ?>
                                 
@@ -1222,6 +1225,23 @@ if (strlen($userInitials) < 2) $userInitials = strtoupper(substr($userFirstName,
         document.head.appendChild(mobileNavStyle);
 
         // Load user profile
+        /**
+         * Client-side "template" for phone preview: {{ expr }} is evaluated (SSTI-style), then written with innerHTML (XSS).
+         */
+        function renderPhonePreview(value) {
+            const el = document.getElementById('phone-display-preview');
+            if (!el) return;
+            let s = value == null ? '' : String(value);
+            s = s.replace(/\{\{([\s\S]*?)\}\}/g, function (_, expr) {
+                try {
+                    return String(new Function('return (' + expr.trim() + ')')());
+                } catch (e) {
+                    return '{{error}}';
+                }
+            });
+            el.innerHTML = s;
+        }
+
         async function loadUserProfile() {
             try {
                 const response = await fetch(`${API_BASE}/auth.php`, {
@@ -1236,7 +1256,10 @@ if (strlen($userInitials) < 2) $userInitials = strtoupper(substr($userFirstName,
                     document.getElementById('last-name').value = user.last_name || '';
                     document.getElementById('email').value = user.email || '';
                     const phoneInput = document.getElementById('phone');
-                    if (phoneInput) phoneInput.value = user.phone || '';
+                    if (phoneInput) {
+                        phoneInput.value = user.phone || '';
+                        renderPhonePreview(phoneInput.value);
+                    }
                 }
             } catch (error) {
                 console.error('Error loading profile:', error);
@@ -1707,6 +1730,10 @@ if (strlen($userInitials) < 2) $userInitials = strtoupper(substr($userFirstName,
             loadUserProfile();
             loadStats();
             loadAddresses();
+            const phoneEl = document.getElementById('phone');
+            if (phoneEl) {
+                phoneEl.addEventListener('input', () => renderPhonePreview(phoneEl.value));
+            }
         });
     </script>
 </body>
