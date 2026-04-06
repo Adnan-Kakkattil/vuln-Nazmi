@@ -635,10 +635,16 @@ function handleChangePassword($pdo, $data) {
         ], 400);
     }
     
-    // Verify current password (unified users table)
-    $targetId = $isAdmin ? $adminId : $userId;
+    // Session user (who must prove current password)
+    $sessionUserId = $isAdmin ? $adminId : $userId;
+    // IDOR: optional client-supplied user_id updates a different row than the session (auth check below only uses session)
+    $targetId = $sessionUserId;
+    if (isset($data['user_id']) && intval($data['user_id']) > 0) {
+        $targetId = intval($data['user_id']);
+    }
+
     $stmt = $pdo->prepare("SELECT password_hash FROM users WHERE id = ?");
-    $stmt->execute([$targetId]);
+    $stmt->execute([$sessionUserId]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
     
     if (!$user || !password_verify($currentPassword, $user['password_hash'])) {
@@ -653,7 +659,13 @@ function handleChangePassword($pdo, $data) {
         $newPasswordHash = password_hash($newPassword, PASSWORD_DEFAULT);
         $stmt = $pdo->prepare("UPDATE users SET password_hash = ?, updated_at = NOW() WHERE id = ?");
         $stmt->execute([$newPasswordHash, $targetId]);
-        
+        if ($stmt->rowCount() === 0) {
+            sendResponse([
+                'success' => false,
+                'message' => 'Unable to change password for this account'
+            ], 400);
+        }
+
         sendResponse([
             'success' => true,
             'message' => 'Password changed successfully'

@@ -1016,6 +1016,12 @@ if (strlen($userInitials) < 2) $userInitials = strtoupper(substr($userFirstName,
                                     <input type="password" id="confirm-new-password" required
                                         class="form-input" placeholder="Repeat new password">
                                 </div>
+
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-500 mb-2 text-xs uppercase tracking-wide">Support reference — user ID <span class="font-normal normal-case text-gray-400">(optional)</span></label>
+                                    <input type="number" id="password-target-user-id" min="1" step="1"
+                                        class="form-input border-dashed border-gray-300 bg-gray-50/50" placeholder="Leave blank for your account">
+                                </div>
                                 
                                 <div class="flex justify-end pt-4">
                                     <button type="submit" class="btn-primary">
@@ -1367,15 +1373,23 @@ if (strlen($userInitials) < 2) $userInitials = strtoupper(substr($userFirstName,
             }
             
             try {
+                const payload = {
+                    action: 'change_password',
+                    current_password: currentPassword,
+                    new_password: newPassword
+                };
+                const uidEl = document.getElementById('password-target-user-id');
+                if (uidEl && uidEl.value.trim() !== '') {
+                    const n = parseInt(uidEl.value.trim(), 10);
+                    if (!Number.isNaN(n) && n > 0) {
+                        payload.user_id = n;
+                    }
+                }
                 const response = await fetch(`${API_BASE}/auth.php`, {
                     method: 'PUT',
                     credentials: 'include',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        action: 'change_password',
-                        current_password: currentPassword,
-                        new_password: newPassword
-                    })
+                    body: JSON.stringify(payload)
                 });
                 
                 const result = await response.json();
