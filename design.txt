@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nazmi Boutique | Elegance Redefined</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .font-serif { font-family: 'Playfair Display', serif; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        :root {
+            --brand-color: #14b8a6;
+        }
+
+        .bg-brand { background-color: var(--brand-color); }
+        .text-brand { color: var(--brand-color); }
+        .border-brand { border-color: var(--brand-color); }
+        .ring-brand { --tw-ring-color: var(--brand-color); }
+
+        .product-card:hover .quick-add {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast-active {
+            bottom: 2.5rem;
+            opacity: 1;
+        }
+
+        @keyframes bounce-subtle {
+            0%, 100% { transform: translateY(-50%) scale(1); }
+            50% { transform: translateY(-55%) scale(1.05); }
+        }
+        
+        .hero-zoom {
+            animation: slowZoom 20s infinite alternate;
+        }
+
+        @keyframes slowZoom {
+            from { transform: scale(1); }
+            to { transform: scale(1.1); }
+        }
+    </style>
+</head>
+<body class="bg-white text-slate-800">
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-[-100px] left-1/2 -translate-x-1/2 z-[100] bg-zinc-900 text-white px-6 py-3 rounded-full shadow-2xl flex items-center gap-3 transition-all duration-500 opacity-0">
+        <i data-lucide="check" class="text-brand w-5 h-5"></i>
+        <span id="toast-message">Added to cart!</span>
+    </div>
+
+    <!-- Scroll to Top -->
+    <button id="scrollTop" class="fixed bottom-10 right-10 z-[100] bg-white border border-slate-200 p-4 rounded-full shadow-xl hover:bg-brand hover:text-white transition-all text-slate-600 hidden">
+        <i data-lucide="arrow-up" class="w-6 h-6"></i>
+    </button>
+
+    <!-- Top Banner -->
+    <div class="bg-brand text-white text-center py-2.5 text-xs md:text-sm font-bold tracking-wide">
+        DIWALI SPECIAL: FLAT 40% OFF ON ETHNIC WEAR | USE CODE: NAZMI40
+    </div>
+
+    <!-- Header -->
+    <header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-100">
+        <div class="container mx-auto px-4 lg:px-12 flex items-center justify-between h-20 md:h-24">
+            
+            <!-- Logo -->
+            <div class="flex-shrink-0 cursor-pointer lg:w-1/4">
+                <h1 class="text-2xl md:text-4xl font-serif font-black tracking-tighter text-slate-900">
+                    NAZMI<span class="text-brand">.</span>
+                </h1>
+            </div>
+
+            <!-- Search Bar -->
+            <div class="hidden lg:flex flex-1 max-w-2xl px-8">
+                <div class="relative w-full">
+                    <input 
+                        id="searchInput"
+                        type="text" 
+                        placeholder="Search for Kurtas, Lehengas, Designers..."
+                        class="w-full bg-slate-50 border border-slate-200 rounded-full py-3.5 pl-6 pr-12 focus:ring-2 focus:ring-brand/20 focus:border-brand outline-none transition-all text-sm"
+                    >
+                    <div class="absolute right-2 top-1/2 -translate-y-1/2 bg-brand p-2.5 rounded-full text-white cursor-pointer hover:bg-teal-600">
+                        <i data-lucide="search" class="w-[18px] h-[18px]"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Icons -->
+            <div class="flex items-center gap-5 md:gap-8 lg:w-1/4 justify-end">
+                <div class="hidden md:flex flex-col items-center cursor-pointer group">
+                    <i data-lucide="user" class="w-5 h-5 group-hover:text-brand transition-colors"></i>
+                    <span class="text-[10px] uppercase font-bold mt-1 text-slate-400 group-hover:text-brand">Profile</span>
+                </div>
+                <div class="relative flex flex-col items-center cursor-pointer group">
+                    <i id="wishlistIcon" data-lucide="heart" class="w-5 h-5 group-hover:text-red-500 transition-colors"></i>
+                    <span class="text-[10px] uppercase font-bold mt-1 text-slate-400 group-hover:text-red-500">Wishlist</span>
+                    <span id="wishlistBadge" class="absolute -top-1 right-0 bg-red-50 text-red-500 border border-red-200 text-[9px] w-4 h-4 rounded-full hidden items-center justify-center font-bold">0</span>
+                </div>
+                <div class="relative flex flex-col items-center cursor-pointer group">
+                    <i data-lucide="shopping-bag" class="w-5 h-5 group-hover:text-brand transition-colors"></i>
+                    <span class="text-[10px] uppercase font-bold mt-1 text-slate-400 group-hover:text-brand">Cart</span>
+                    <span id="cartBadge" class="absolute -top-1 right-0 bg-brand text-white text-[9px] w-4 h-4 rounded-full hidden items-center justify-center font-bold">0</span>
+                </div>
+                <button class="lg:hidden" onclick="toggleMobileMenu(true)">
+                    <i data-lucide="menu" class="w-6 h-6"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Categories Bar -->
+        <div class="hidden lg:block bg-white border-t border-slate-50 overflow-x-auto no-scrollbar">
+            <div id="categoryContainer" class="container mx-auto px-12 flex justify-center gap-12 py-4">
+                <!-- Categories injected by JS -->
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Menu -->
+    <div id="mobileMenu" class="fixed inset-0 z-[60] bg-white transform translate-x-full transition-transform duration-300 hidden">
+        <div class="p-6 h-full flex flex-col">
+            <div class="flex justify-between items-center mb-12">
+                <h1 class="text-2xl font-serif font-black">NAZMI<span class="text-brand">.</span></h1>
+                <button onclick="toggleMobileMenu(false)"><i data-lucide="x" class="w-8 h-8"></i></button>
+            </div>
+            <div id="mobileCategoryList" class="flex flex-col gap-8">
+                <!-- Mobile categories injected by JS -->
+            </div>
+            <div class="mt-auto border-t pt-8 grid grid-cols-2 gap-4">
+                <button class="bg-slate-900 text-white py-4 rounded-xl font-bold">Sign In</button>
+                <button class="border border-slate-200 py-4 rounded-xl font-bold">Contact</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="relative h-[50vh] md:h-[80vh] w-full overflow-hidden bg-slate-900">
+        <img 
+            src="https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?q=80&w=2000&auto=format&fit=crop" 
+            alt="Hero" 
+            class="w-full h-full object-cover opacity-80 hero-zoom"
+        />
+        <div class="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent flex flex-col items-start justify-center px-6 md:px-24">
+            <div class="max-w-3xl space-y-6">
+                <p class="text-brand font-black uppercase tracking-[0.4em] text-sm md:text-lg">Spring / Summer 2024</p>
+                <h2 class="text-5xl md:text-8xl font-serif font-black text-white leading-[0.9]">Couture for <br/> the Modern<br/> Woman.</h2>
+                <p class="text-lg md:text-2xl text-slate-200 font-light max-w-xl">
+                    Discover unparalleled craftsmanship and timeless elegance in our latest boutique arrivals.
+                </p>
+                <button class="bg-brand hover:bg-white hover:text-slate-900 text-white px-10 py-5 rounded-full font-black text-lg transition-all shadow-2xl flex items-center gap-3">
+                    SHOP ALL COLLECTIONS <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="py-12 md:py-24 bg-white">
+        <div class="container mx-auto px-4 lg:px-12">
+            
+            <div class="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
+                <div>
+                    <div class="flex items-center gap-3 mb-2">
+                        <span class="h-[2px] w-8 bg-brand"></span>
+                        <span class="text-brand font-bold uppercase tracking-widest text-xs">Curated Selection</span>
+                    </div>
+                    <h2 id="sectionTitle" class="text-3xl md:text-5xl font-black text-slate-900 tracking-tight">Featured Collections</h2>
+                </div>
+                
+                <div class="flex items-center gap-4 border-b border-slate-200 pb-2">
+                    <i data-lucide="sliders-horizontal" class="w-4.5 h-4.5 text-slate-400"></i>
+                    <select class="bg-transparent border-none text-sm font-bold focus:ring-0 outline-none cursor-pointer text-slate-600">
+                        <option>Sort: Popularity</option>
+                        <option>Sort: Newest First</option>
+                        <option>Sort: Price (Low - High)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Product Grid -->
+            <div id="productGrid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-x-4 md:gap-x-8 gap-y-12">
+                <!-- Products injected by JS -->
+            </div>
+
+            <!-- Amazon-style Load More -->
+            <div class="mt-24 border-t border-slate-100 pt-16 flex flex-col items-center">
+                <div class="flex items-center gap-4 mb-8">
+                    <span class="text-sm font-bold text-slate-400 italic">Showing 15 of 450 items</span>
+                    <div class="w-48 h-1 bg-slate-100 rounded-full overflow-hidden">
+                        <div class="w-1/4 h-full bg-brand"></div>
+                    </div>
+                </div>
+                <button class="group relative px-12 py-5 overflow-hidden rounded-full border-2 border-slate-900 font-black text-lg transition-all hover:text-white">
+                    <span class="absolute inset-0 w-0 bg-slate-900 transition-all duration-500 ease-out group-hover:w-full"></span>
+                    <span class="relative">LOAD MORE PRODUCTS</span>
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Trust Badges -->
+    <section class="bg-slate-50 py-20 border-y border-slate-100">
+        <div class="container mx-auto px-12 grid grid-cols-2 lg:grid-cols-4 gap-12">
+            <div class="flex flex-col items-center text-center group">
+                <i data-lucide="map-pin" class="text-brand w-8 h-8 mb-6 group-hover:scale-110 transition-transform"></i>
+                <h5 class="font-black text-lg mb-2 uppercase tracking-tighter">Global Shipping</h5>
+                <p class="text-sm text-slate-500 font-medium">Express delivery to 150+ countries</p>
+            </div>
+            <div class="flex flex-col items-center text-center group">
+                <i data-lucide="shopping-bag" class="text-brand w-8 h-8 mb-6 group-hover:scale-110 transition-transform"></i>
+                <h5 class="font-black text-lg mb-2 uppercase tracking-tighter">Secure Checkout</h5>
+                <p class="text-sm text-slate-500 font-medium">100% safe payment processing</p>
+            </div>
+            <div class="flex flex-col items-center text-center group">
+                <i data-lucide="check" class="text-brand w-8 h-8 mb-6 group-hover:scale-110 transition-transform"></i>
+                <h5 class="font-black text-lg mb-2 uppercase tracking-tighter">Authentic Goods</h5>
+                <p class="text-sm text-slate-500 font-medium">Curated designer collections only</p>
+            </div>
+            <div class="flex flex-col items-center text-center group">
+                <i data-lucide="phone" class="text-brand w-8 h-8 mb-6 group-hover:scale-110 transition-transform"></i>
+                <h5 class="font-black text-lg mb-2 uppercase tracking-tighter">24/7 Concierge</h5>
+                <p class="text-sm text-slate-500 font-medium">Dedicated styling assistants</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-white pt-24 pb-12 border-t border-slate-100">
+        <div class="container mx-auto px-12">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16 mb-24">
+                <div class="space-y-8">
+                    <h2 class="text-4xl font-serif font-black">NAZMI<span class="text-brand">.</span></h2>
+                    <p class="text-slate-500 leading-relaxed font-medium">
+                        Designing for the bold, the elegant, and the authentic. Nazmi Boutique is your destination for premium artisanal apparel.
+                    </p>
+                    <div class="flex gap-5">
+                        <div class="w-12 h-12 rounded-full border border-slate-100 flex items-center justify-center hover:bg-brand hover:text-white transition-all cursor-pointer">
+                            <i data-lucide="facebook" class="w-5 h-5"></i>
+                        </div>
+                        <div class="w-12 h-12 rounded-full border border-slate-100 flex items-center justify-center hover:bg-brand hover:text-white transition-all cursor-pointer">
+                            <i data-lucide="instagram" class="w-5 h-5"></i>
+                        </div>
+                        <div class="w-12 h-12 rounded-full border border-slate-100 flex items-center justify-center hover:bg-brand hover:text-white transition-all cursor-pointer">
+                            <i data-lucide="twitter" class="w-5 h-5"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h6 class="font-black text-xs uppercase tracking-[0.2em] mb-10 text-slate-400">Collections</h6>
+                    <ul class="space-y-5">
+                        <li class="text-sm font-bold text-slate-600 hover:text-brand transition-colors cursor-pointer">New Arrivals</li>
+                        <li class="text-sm font-bold text-slate-600 hover:text-brand transition-colors cursor-pointer">Best Sellers</li>
+                        <li class="text-sm font-bold text-slate-600 hover:text-brand transition-colors cursor-pointer">Ethnic Wear</li>
+                        <li class="text-sm font-bold text-slate-600 hover:text-brand transition-colors cursor-pointer">Sale</li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h6 class="font-black text-xs uppercase tracking-[0.2em] mb-10 text-slate-400">Assistance</h6>
+                    <ul class="space-y-5">
+                        <li class="text-sm font-bold text-slate-600 hover:text-brand transition-colors cursor-pointer">Track Order</li>
+                        <li class="text-sm font-bold text-slate-600 hover:text-brand transition-colors cursor-pointer">Returns</li>
+                        <li class="text-sm font-bold text-slate-600 hover:text-brand transition-colors cursor-pointer">Size Guide</li>
+                        <li class="text-sm font-bold text-slate-600 hover:text-brand transition-colors cursor-pointer">Contact</li>
+                    </ul>
+                </div>
+
+                <div class="space-y-6">
+                    <h6 class="font-black text-xs uppercase tracking-[0.2em] mb-10 text-slate-400">Join Us</h6>
+                    <div class="flex">
+                        <input type="text" placeholder="Email Address" class="bg-slate-50 border-none rounded-l-lg px-4 py-3 text-sm focus:ring-1 focus:ring-brand w-full">
+                        <button class="bg-brand text-white px-6 rounded-r-lg font-bold">JOIN</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pt-12 border-t border-slate-100 flex flex-col md:flex-row justify-between items-center gap-8 text-[10px] font-black uppercase tracking-widest text-slate-400">
+                <p>© 2024 Nazmi Boutique International</p>
+                <div class="flex gap-4 opacity-40">
+                    <img src="https://cdn-icons-png.flaticon.com/512/349/349221.png" alt="Visa" class="h-4">
+                    <img src="https://cdn-icons-png.flaticon.com/512/349/349230.png" alt="Mastercard" class="h-4">
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Data
+        const CATEGORIES = ["All", "Ethnic Wear", "Western Wear", "Lehengas", "Party Wear", "Accessories", "New Arrivals", "Best Sellers"];
+        
+        const PRODUCTS = [
+            { id: 1, name: "Emerald Silk Saree", category: "Ethnic Wear", price: 4599, originalPrice: 8999, image: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?q=80&w=600&auto=format&fit=crop", rating: 4.8, reviews: 124 },
+            { id: 2, name: "Ivory Georgette Anarkali", category: "Ethnic Wear", price: 3299, originalPrice: 5999, image: "https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?q=80&w=600&auto=format&fit=crop", rating: 4.9, reviews: 89 },
+            { id: 3, name: "Teal Floral Summer Dress", category: "Western Wear", price: 1899, originalPrice: 2999, image: "https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?q=80&w=600&auto=format&fit=crop", rating: 4.5, reviews: 210 },
+            { id: 4, name: "Bridal Crimson Lehenga", category: "Lehengas", price: 12500, originalPrice: 24999, image: "https://images.unsplash.com/photo-1594463750939-ebb28c3f7f75?q=80&w=600&auto=format&fit=crop", rating: 5.0, reviews: 45 },
+            { id: 5, name: "Velvet Night Gown", category: "Party Wear", price: 2499, originalPrice: 4500, image: "https://images.unsplash.com/photo-1595777457583-95e059d581b8?q=80&w=600&auto=format&fit=crop", rating: 4.7, reviews: 156 },
+            { id: 6, name: "Oxidized Silver Choker Set", category: "Accessories", price: 899, originalPrice: 1500, image: "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?q=80&w=600&auto=format&fit=crop", rating: 4.6, reviews: 320 },
+            { id: 7, name: "Pastel Pink Kurti Set", category: "Ethnic Wear", price: 2199, originalPrice: 3999, image: "https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?q=80&w=600&auto=format&fit=crop", rating: 4.8, reviews: 78 },
+            { id: 8, name: "Midnight Blue Satin Wrap", category: "Western Wear", price: 1599, originalPrice: 2499, image: "https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?q=80&w=600&auto=format&fit=crop", rating: 4.4, reviews: 65 },
+            { id: 9, name: "Hand-embroidered Clutch", category: "Accessories", price: 1299, originalPrice: 2200, image: "https://images.unsplash.com/photo-1566150905458-1bf1fc113f0d?q=80&w=600&auto=format&fit=crop", rating: 4.9, reviews: 112 },
+            { id: 10, name: "Sequined Gold Party Dress", category: "Party Wear", price: 3899, originalPrice: 7500, image: "https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?q=80&w=600&auto=format&fit=crop", rating: 4.7, reviews: 88 },
+            { id: 11, name: "Block Print Cotton Suit", category: "Ethnic Wear", price: 1800, originalPrice: 3200, image: "https://images.unsplash.com/photo-1590110282851-420d2c62391b?q=80&w=600&auto=format&fit=crop", rating: 4.5, reviews: 198 },
+            { id: 12, name: "Floral Organza Saree", category: "Ethnic Wear", price: 3599, originalPrice: 5999, image: "https://images.unsplash.com/photo-1610030469915-9a88cd9f9b41?q=80&w=600&auto=format&fit=crop", rating: 4.9, reviews: 54 },
+            { id: 13, name: "Classic Cotton Tunic", category: "Western Wear", price: 999, originalPrice: 1599, image: "https://images.unsplash.com/photo-1585487000160-6ebcfceb0d03?q=80&w=600&auto=format&fit=crop", rating: 4.3, reviews: 412 },
+            { id: 14, name: "Embroidered Pashmina", category: "Accessories", price: 4999, originalPrice: 7999, image: "https://images.unsplash.com/photo-1606760227091-3dd870d97f1d?q=80&w=600&auto=format&fit=crop", rating: 4.9, reviews: 32 },
+            { id: 15, name: "Designer Silk Lehenga", category: "Lehengas", price: 18500, originalPrice: 29000, image: "https://images.unsplash.com/photo-1621285853634-713b8dd6b5fd?q=80&w=600&auto=format&fit=crop", rating: 5.0, reviews: 18 }
+        ];
+
+        // State
+        let currentCategory = "All";
+        let searchQuery = "";
+        let cartCount = 0;
+        let wishlist = new Set();
+
+        // DOM Elements
+        const productGrid = document.getElementById('productGrid');
+        const categoryContainer = document.getElementById('categoryContainer');
+        const searchInput = document.getElementById('searchInput');
+        const sectionTitle = document.getElementById('sectionTitle');
+        const cartBadge = document.getElementById('cartBadge');
+        const wishlistBadge = document.getElementById('wishlistBadge');
+        const scrollTopBtn = document.getElementById('scrollTop');
+        const toast = document.getElementById('toast');
+        const toastMsg = document.getElementById('toast-message');
+
+        // Initialize
+        function init() {
+            renderCategories();
+            renderProducts();
+            lucide.createIcons();
+            setupEventListeners();
+        }
+
+        function setupEventListeners() {
+            searchInput.addEventListener('input', (e) => {
+                searchQuery = e.target.value.toLowerCase();
+                renderProducts();
+            });
+
+            window.addEventListener('scroll', () => {
+                if (window.pageYOffset > 300) scrollTopBtn.classList.remove('hidden');
+                else scrollTopBtn.classList.add('hidden');
+            });
+
+            scrollTopBtn.addEventListener('click', () => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        }
+
+        function renderCategories() {
+            const html = CATEGORIES.map(cat => `
+                <button 
+                    onclick="setCategory('${cat}')"
+                    class="text-[11px] font-black uppercase tracking-[0.2em] transition-all relative py-1 hover:text-brand ${currentCategory === cat ? 'text-brand' : 'text-slate-500'}"
+                >
+                    ${cat}
+                    ${currentCategory === cat ? '<span class="absolute -bottom-1 left-0 right-0 h-0.5 bg-brand rounded-full"></span>' : ''}
+                </button>
+            `).join('');
+            
+            categoryContainer.innerHTML = html;
+            
+            // Mobile menu categories
+            document.getElementById('mobileCategoryList').innerHTML = CATEGORIES.map(cat => `
+                <button onclick="setCategory('${cat}'); toggleMobileMenu(false);" class="text-2xl font-bold text-left ${currentCategory === cat ? 'text-brand' : 'text-slate-900'}">
+                    ${cat}
+                </button>
+            `).join('');
+        }
+
+        function setCategory(cat) {
+            currentCategory = cat;
+            sectionTitle.innerText = cat === "All" ? "Featured Collections" : cat;
+            renderCategories();
+            renderProducts();
+        }
+
+        function renderProducts() {
+            const filtered = PRODUCTS.filter(p => {
+                const matchesCat = currentCategory === "All" || p.category === currentCategory;
+                const matchesSearch = p.name.toLowerCase().includes(searchQuery);
+                return matchesCat && matchesSearch;
+            });
+
+            if (filtered.length === 0) {
+                productGrid.innerHTML = `
+                    <div class="col-span-full text-center py-20 bg-slate-50 rounded-3xl">
+                        <h3 class="text-xl font-bold mb-2 text-slate-400">No items found matching your search.</h3>
+                    </div>
+                `;
+                return;
+            }
+
+            productGrid.innerHTML = filtered.map(product => {
+                const isWishlisted = wishlist.has(product.id);
+                return `
+                <div class="group cursor-pointer product-card">
+                    <div class="relative aspect-[3/4] overflow-hidden rounded-xl bg-slate-50 mb-5">
+                        <img src="${product.image}" alt="${product.name}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000">
+                        ${product.rating >= 4.9 ? '<div class="absolute top-3 left-3 bg-slate-900 text-white text-[9px] font-black px-2 py-1 rounded tracking-tighter">LIMITED EDITION</div>' : ''}
+                        
+                        <div class="quick-add absolute inset-0 bg-black/5 opacity-0 transition-all flex flex-col items-center justify-end p-4 translate-y-4">
+                            <button onclick="addToCart('${product.name}')" class="w-full bg-white text-slate-900 py-3 rounded-lg font-bold text-xs shadow-xl flex items-center justify-center gap-2 hover:bg-brand hover:text-white transition-colors">
+                                <i data-lucide="shopping-bag" class="w-3.5 h-3.5"></i> ADD TO CART
+                            </button>
+                        </div>
+
+                        <button onclick="toggleWishlist(event, ${product.id})" class="absolute top-3 right-3 p-2 rounded-full shadow-lg transition-all ${isWishlisted ? 'bg-white text-red-500' : 'bg-white/80 text-slate-400 hover:text-red-500'}">
+                            <i data-lucide="heart" class="w-4 h-4 ${isWishlisted ? 'fill-current' : ''}"></i>
+                        </button>
+                    </div>
+
+                    <div class="space-y-1 px-1">
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">${product.category}</p>
+                        <h4 class="font-bold text-slate-800 text-sm md:text-base line-clamp-1 group-hover:text-brand transition-colors">${product.name}</h4>
+                        <div class="flex items-center gap-2 mt-2">
+                            <span class="text-base font-black text-slate-900 tracking-tight">₹${product.price.toLocaleString()}</span>
+                            <span class="text-xs text-slate-400 line-through font-medium">₹${product.originalPrice.toLocaleString()}</span>
+                        </div>
+                    </div>
+                </div>
+            `}).join('');
+            lucide.createIcons();
+        }
+
+        function addToCart(name) {
+            cartCount++;
+            cartBadge.innerText = cartCount;
+            cartBadge.classList.remove('hidden');
+            cartBadge.classList.add('flex');
+            showToast(`Added ${name} to your bag!`);
+        }
+
+        function toggleWishlist(e, id) {
+            e.stopPropagation();
+            if (wishlist.has(id)) {
+                wishlist.delete(id);
+                showToast('Removed from wishlist');
+            } else {
+                wishlist.add(id);
+                showToast('Added to wishlist!');
+            }
+            wishlistBadge.innerText = wishlist.size;
+            wishlistBadge.classList.toggle('hidden', wishlist.size === 0);
+            wishlistBadge.classList.toggle('flex', wishlist.size > 0);
+            renderProducts();
+        }
+
+        function showToast(msg) {
+            toastMsg.innerText = msg;
+            toast.classList.add('toast-active');
+            setTimeout(() => toast.classList.remove('toast-active'), 3000);
+        }
+
+        function toggleMobileMenu(show) {
+            const menu = document.getElementById('mobileMenu');
+            if (show) {
+                menu.classList.remove('hidden');
+                setTimeout(() => menu.classList.remove('translate-x-full'), 10);
+            } else {
+                menu.classList.add('translate-x-full');
+                setTimeout(() => menu.classList.add('hidden'), 300);
+            }
+        }
+
+        init();
+    </script>
+</body>
+</html>

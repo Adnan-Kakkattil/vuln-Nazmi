@@ -1,0 +1,63 @@
+# ============================================================================
+# TIVORA ELECTRONICS - GIT IGNORE
+# ============================================================================
+
+# Environment files (NEVER commit .env to version control)
+.env
+.env.local
+.env.*.local
+
+# IDE & Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# PHP
+
+*.log
+*.cache
+
+# Uploads & User generated content
+uploads/
+public/uploads/
+storage/app/*
+!storage/app/.gitkeep
+storage/logs/*
+!storage/logs/.gitkeep
+storage/framework/cache/*
+!storage/framework/cache/.gitkeep
+storage/framework/sessions/*
+!storage/framework/sessions/.gitkeep
+storage/framework/views/*
+!storage/framework/views/.gitkeep
+
+# Node modules (if using any build tools)
+node_modules/
+package-lock.json
+yarn.lock
+
+# Build files
+dist/
+build/# Temporary files
+tmp/
+temp/
+*.tmp
+
+# OS files
+Thumbs.db
+desktop.ini
+
+# Backup files
+*.bak
+*.backup
+*.sql.gz
+*.sql.bak
+
+# Config files with sensitive data
+config/database.local.php
+config/config.local.php
+storage/*.json
+vendor/

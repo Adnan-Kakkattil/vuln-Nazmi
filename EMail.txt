@@ -1,0 +1,14 @@
+EMail
+
+Reset password
+Welcome user
+Order confirmation
+Order tracking
+Order cancellation
+Order refund
+Order refund confirmation
+Order refund rejection
+Order refund rejection confirmation
+Order refund rejection confirmation
+Notification
+

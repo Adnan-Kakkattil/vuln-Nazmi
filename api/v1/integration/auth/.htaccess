@@ -1,0 +1,12 @@
+# API Auth Directory Configuration
+# Routes /token requests to token.php
+
+RewriteEngine On
+
+# Route /token to token.php
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^token$ token.php [L,QSA]
+
+# Route /token/ to token.php
+RewriteRule ^token/$ token.php [L,QSA]
