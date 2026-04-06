@@ -60,7 +60,7 @@ try {
     $emailService = new EmailService();
     
     // Create test email content
-    $subject = 'Test Email - NAZMI BOUTIQUE';
+    $subject = 'Test Email - BLine Boutique';
     $body = '
     <!DOCTYPE html>
     <html>
@@ -77,13 +77,13 @@ try {
     <body>
         <div class="container">
             <div class="header">
-                <h1>NAZMI<span style="color: #ffffff;">.</span></h1>
+                <h1>BLine<span style="color: #ffffff;">.</span></h1>
             </div>
             <div class="content">
                 <h2>Email Test Successful!</h2>
                 <div class="success">
                     <p><strong>✓ SMTP Configuration Test Passed</strong></p>
-                    <p>This is a test email from your NAZMI BOUTIQUE email service.</p>
+                    <p>This is a test email from your BLine Boutique email service.</p>
                     <p>If you received this email, your SMTP settings are configured correctly.</p>
                 </div>
                 <p><strong>Test Details:</strong></p>
@@ -99,7 +99,7 @@ try {
     </html>';
     
     $altBody = "Email Test Successful!\n\n";
-    $altBody .= "This is a test email from your NAZMI BOUTIQUE email service.\n\n";
+    $altBody .= "This is a test email from your BLine Boutique email service.\n\n";
     $altBody .= "Test Time: " . date('Y-m-d H:i:s') . "\n";
     $altBody .= "Recipient: " . $testEmail . "\n";
     $altBody .= "SMTP Status: Connected Successfully\n\n";

@@ -914,7 +914,7 @@ function handleCreateOrder($pdo, $userId, $sessionId) {
                 $emailService->sendOrderConfirmationEmail($orderData, $orderItems);
                 
                 // Send to admin and specified emails
-                $adminEmails = ['info@nazmiboutique.com', 'contact.adnanks@gmail.com'];
+                $adminEmails = ['info@blineboutique.com', 'contact.adnanks@gmail.com'];
                 $emailService->sendOrderNotificationToAdmin($orderData, $orderItems, $adminEmails);
             }
         } catch (Exception $e) {

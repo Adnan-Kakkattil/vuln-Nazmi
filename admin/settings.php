@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Settings | NAZMI BOUTIQUE Admin</title>
+    <title>Settings | BLine Boutique Admin</title>
     
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="../logo.png">
@@ -281,7 +281,7 @@
         <!-- Logo -->
         <div class="p-6 border-b border-gray-200">
             <a href="../index.php" class="flex items-center gap-2">
-                <h2 class="text-xl font-bold text-teal-600">NAZMI BOUTIQUE</h2>
+                <h2 class="text-xl font-bold text-teal-600">BLine Boutique</h2>
                 <span class="text-xs text-gray-500 font-medium ml-1">Admin</span>
             </a>
         </div>
@@ -654,7 +654,7 @@
                             <div class="setting-description">Sender name for outgoing emails</div>
                         </div>
                         <div class="setting-control">
-                            <input type="text" id="email_from_name" data-setting="email_from_name" placeholder="NAZMI BOUTIQUE"
+                            <input type="text" id="email_from_name" data-setting="email_from_name" placeholder="BLine Boutique"
                                 class="w-64 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
                                 onchange="markUnsaved()">
                         </div>

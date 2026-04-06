@@ -9,7 +9,7 @@ if (session_status() === PHP_SESSION_NONE) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
-    <title id="page-title">Product | NAZMI BOUTIQUE</title>
+    <title id="page-title">Product | BLine Boutique</title>
     
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="logo.png">
@@ -149,14 +149,14 @@ if (session_status() === PHP_SESSION_NONE) {
     <!-- Footer -->
     <footer class="bg-slate-50 py-16 mt-20 border-t border-slate-100">
         <div class="container mx-auto px-4 lg:px-12 text-center">
-            <h2 class="text-3xl font-serif font-black mb-8">NAZMI<span class="text-brand">.</span></h2>
+            <h2 class="text-3xl font-serif font-black mb-8">BLine<span class="text-brand">.</span></h2>
             <div class="flex justify-center gap-8 mb-12 text-[10px] font-black uppercase tracking-widest text-slate-400">
                 <a href="index.php#about" class="hover:text-brand">About Us</a>
                 <a href="index.php#contact" class="hover:text-brand">Shipping</a>
                 <a href="#" class="hover:text-brand">Returns</a>
                 <a href="#" class="hover:text-brand">Privacy</a>
             </div>
-            <p class="text-[10px] font-black uppercase tracking-widest text-slate-300">© 2024 Nazmi Boutique International</p>
+            <p class="text-[10px] font-black uppercase tracking-widest text-slate-300">© 2024 BLine Boutique International</p>
         </div>
     </footer>
 
@@ -234,7 +234,7 @@ if (session_status() === PHP_SESSION_NONE) {
         // Render product content
         function renderProduct() {
             // Update page title
-            document.getElementById('page-title').textContent = `${product.name} | NAZMI BOUTIQUE`;
+            document.getElementById('page-title').textContent = `${product.name} | BLine Boutique`;
 
             // Get primary image or first image
             const primaryImage = product.primary_image || (product.images && product.images.length > 0 

@@ -88,7 +88,7 @@ if (!file_exists($pageFile)) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo htmlspecialchars($pageTitle); ?> | NAZMI BOUTIQUE Admin</title>
+    <title><?php echo htmlspecialchars($pageTitle); ?> | BLine Boutique Admin</title>
     
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="../logo.png">

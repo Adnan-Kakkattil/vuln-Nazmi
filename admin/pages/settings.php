@@ -325,7 +325,7 @@
                 <div class="setting-description text-sm text-gray-500">Sender name for outgoing emails</div>
             </div>
             <div class="setting-control flex-shrink-0 ml-6">
-                <input type="text" id="email_from_name" data-setting="email_from_name" placeholder="NAZMI BOUTIQUE"
+                <input type="text" id="email_from_name" data-setting="email_from_name" placeholder="BLine Boutique"
                     class="w-64 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
                     onchange="markUnsaved()">
             </div>

@@ -105,7 +105,7 @@ function getDbConnection() {
 }
 
 // Define useful constants
-define('APP_NAME', config('APP_NAME', 'NAZMI BOUTIQUE'));
+define('APP_NAME', config('APP_NAME', 'BLine Boutique'));
 define('APP_ENV', config('APP_ENV', 'production'));
 
 // Auto-detect APP_URL from current request if not set or set to localhost

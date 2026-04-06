@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>B2B Requests | Tivora Admin</title>
+    <title>B2B Requests | BLine Boutique Admin</title>
     
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="../logo.png">
@@ -203,7 +203,7 @@
         <!-- Logo -->
         <div class="p-6 border-b border-gray-200">
             <a href="../index.php" class="flex items-center gap-2">
-                <img src="../Tivora_wordmark_red.avif" alt="Tivora Electronics" class="h-8 w-auto">
+                <img src="../Tivora_wordmark_red.avif" alt="BLine Boutique" class="h-8 w-auto">
                 <span class="text-xs text-gray-500 font-medium ml-1">Admin</span>
             </a>
         </div>

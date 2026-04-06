@@ -45,7 +45,7 @@ if (!$isLoggedIn) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
-    <title>Checkout | NAZMI Boutique</title>
+    <title>Checkout | BLine Boutique</title>
     
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="logo.png">
@@ -2812,7 +2812,7 @@ if (!$isLoggedIn) {
                     key: razorpayKey,
                     amount: result.data.amount,
                     currency: result.data.currency || 'INR',
-                    name: state.settings.general?.site_name || 'NAZMI Boutique',
+                    name: state.settings.general?.site_name || 'BLine Boutique',
                     description: `Order Payment`,
                     order_id: result.data.razorpay_order_id,
                     prefill: {
@@ -2959,10 +2959,10 @@ if (!$isLoggedIn) {
                 <!-- Brand Info -->
                 <div>
                     <div class="mb-6">
-                        <h2 class="text-2xl font-serif font-bold text-gray-900">NAZMI.</h2>
+                        <h2 class="text-2xl font-serif font-bold text-gray-900">BLine.</h2>
                     </div>
                     <p class="text-gray-500 mb-6 text-sm leading-relaxed">
-                        NAZMI Boutique - Elegance Redefined. Discover unparalleled craftsmanship and timeless elegance in our latest boutique arrivals.
+                        BLine Boutique - Elegance Redefined. Discover unparalleled craftsmanship and timeless elegance in our latest boutique arrivals.
                     </p>
                     <div class="flex space-x-4">
                         <a href="#" class="text-gray-400 hover:text-brand transition-colors"><i data-lucide="facebook" class="w-5 h-5"></i></a>
@@ -2977,7 +2977,7 @@ if (!$isLoggedIn) {
                     <ul class="space-y-4 text-sm text-gray-600">
                         <li class="flex items-start gap-3">
                             <i data-lucide="map-pin" class="w-5 h-5 text-brand mt-0.5"></i>
-                            <span>NAZMI Boutique<br>Your Address Here</span>
+                            <span>BLine Boutique<br>Your Address Here</span>
                         </li>
                         <li class="flex items-center gap-3">
                             <i data-lucide="phone" class="w-5 h-5 text-brand"></i>
@@ -2985,7 +2985,7 @@ if (!$isLoggedIn) {
                         </li>
                         <li class="flex items-center gap-3">
                             <i data-lucide="mail" class="w-5 h-5 text-brand"></i>
-                            <span>info@nazmiboutique.com</span>
+                            <span>info@blineboutique.com</span>
                         </li>
                     </ul>
                 </div>
@@ -3023,7 +3023,7 @@ if (!$isLoggedIn) {
 
             <!-- Bottom Bar -->
             <div class="border-t border-gray-200 py-8 flex flex-col md:flex-row justify-between items-center gap-4">
-                <p class="text-xs text-gray-500">© 2026 NAZMI Boutique. All rights reserved.</p>
+                <p class="text-xs text-gray-500">© 2026 BLine Boutique. All rights reserved.</p>
                 <div class="flex gap-4">
                      <!-- Payment Icons (Simulated with text/svg for simplicity) -->
                      <span class="text-xs text-gray-400 border border-gray-200 px-2 py-1 rounded">Visa</span>

@@ -36,7 +36,7 @@ $searchQuery = $_GET['search'] ?? '';
 ?>
 <!-- Top Banner -->
 <div class="bg-brand text-white text-center py-2.5 text-xs md:text-sm font-bold tracking-wide">
-    DIWALI SPECIAL: FLAT 40% OFF ON ETHNIC WEAR | USE CODE: NAZMI40
+    DIWALI SPECIAL: FLAT 40% OFF ON ETHNIC WEAR | USE CODE: BLINE40
 </div>
 
 <!-- Header -->
@@ -46,7 +46,7 @@ $searchQuery = $_GET['search'] ?? '';
         <!-- Logo -->
         <div class="flex-shrink-0 cursor-pointer lg:w-1/4" onclick="window.location.href='index.php'">
             <h1 class="text-2xl md:text-4xl font-serif font-black tracking-tighter text-slate-900">
-                NAZMI<span class="text-brand">.</span>
+                BLine<span class="text-brand">.</span>
             </h1>
         </div>
 
@@ -155,7 +155,7 @@ $searchQuery = $_GET['search'] ?? '';
 <div id="mobileMenu" class="fixed inset-0 z-[110] bg-white transform translate-x-full transition-transform duration-300 hidden">
     <div class="p-6 h-full flex flex-col">
         <div class="flex justify-between items-center mb-12">
-            <h1 class="text-2xl font-serif font-black">NAZMI<span class="text-brand">.</span></h1>
+            <h1 class="text-2xl font-serif font-black">BLine<span class="text-brand">.</span></h1>
             <button onclick="toggleMobileMenu(false)"><i data-lucide="x" class="w-8 h-8"></i></button>
         </div>
         

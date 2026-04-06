@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Forgot Password | Nazmi Boutique</title>
+    <title>Forgot Password | BLine Boutique</title>
     
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="logo.png">
@@ -258,7 +258,7 @@
             <div class="login-image-side">
                 <img 
                     src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=1200&auto=format&fit=crop" 
-                    alt="Nazmi Boutique Fashion" 
+                    alt="BLine Boutique Fashion" 
                     class="absolute inset-0 w-full h-full object-cover"
                 >
                 <div class="absolute inset-0 bg-black/20"></div>
@@ -268,7 +268,7 @@
                 </div>
                 <div class="absolute top-12 left-12">
                     <h1 class="text-3xl font-serif font-black tracking-tighter text-white">
-                        NAZMI<span class="text-brand">.</span>
+                        BLine<span class="text-brand">.</span>
                     </h1>
                 </div>
             </div>
@@ -277,7 +277,7 @@
             <div class="login-form-side">
                 <div class="mb-10 md:hidden text-center">
                     <h1 class="text-3xl font-serif font-black tracking-tighter text-slate-900">
-                        NAZMI<span class="text-brand">.</span>
+                        BLine<span class="text-brand">.</span>
                     </h1>
                 </div>
 

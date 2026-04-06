@@ -11,7 +11,7 @@ The email service is configured with the following Hostinger SMTP settings:
 - **Username**: `mail@arzhizeon.com`
 - **Password**: `Adnan@66202`
 - **From Email**: `mail@archizeon.com`
-- **From Name**: `NAZMI BOUTIQUE`
+- **From Name**: `BLine Boutique`
 
 ## Setup Steps
 
@@ -97,7 +97,7 @@ The service includes professionally designed HTML email templates:
 
 Both templates are:
 - Mobile-responsive
-- Branded with NAZMI BOUTIQUE styling
+- Branded with BLine Boutique styling
 - Include plain text alternatives
 
 ## Troubleshooting

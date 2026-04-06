@@ -9,7 +9,7 @@ if (session_status() === PHP_SESSION_NONE) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Account | Nazmi Boutique</title>
+    <title>Create Account | BLine Boutique</title>
     
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="logo.png">
@@ -187,7 +187,7 @@ if (session_status() === PHP_SESSION_NONE) {
             <div class="login-image-side">
                 <img 
                     src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=1200&auto=format&fit=crop" 
-                    alt="Nazmi Boutique Fashion" 
+                    alt="BLine Boutique Fashion" 
                     class="absolute inset-0 w-full h-full object-cover"
                 >
                 <div class="absolute inset-0 bg-black/20"></div>
@@ -197,7 +197,7 @@ if (session_status() === PHP_SESSION_NONE) {
                 </div>
                 <div class="absolute top-12 left-12">
                     <h1 class="text-3xl font-serif font-black tracking-tighter text-white">
-                        NAZMI<span class="text-brand">.</span>
+                        BLine<span class="text-brand">.</span>
                     </h1>
                 </div>
             </div>
@@ -206,12 +206,12 @@ if (session_status() === PHP_SESSION_NONE) {
             <div class="login-form-side">
                 <div class="mb-6 sm:mb-8 md:hidden text-center">
                     <h1 class="text-2xl sm:text-3xl font-serif font-black tracking-tighter text-slate-900 mb-4">
-                        NAZMI<span class="text-brand">.</span>
+                        BLine<span class="text-brand">.</span>
                     </h1>
                 </div>
 
                 <div class="mb-5 sm:mb-6 md:mb-8">
-                    <p class="text-xs text-slate-400 font-medium mb-2 sm:mb-3 md:mb-4">Join NAZMI BOUTIQUE for a better shopping experience</p>
+                    <p class="text-xs text-slate-400 font-medium mb-2 sm:mb-3 md:mb-4">Join BLine Boutique for a better shopping experience</p>
                     <h2 class="text-2xl sm:text-3xl font-serif font-black text-slate-900 mb-2">Create Account</h2>
                 </div>
 

@@ -106,7 +106,7 @@ try {
     // From address - use provided email
     $mail->setFrom(
         $settings['email_from_address'] ?? 'mail@archizeon.com',
-        $settings['email_from_name'] ?? 'NAZMI BOUTIQUE'
+        $settings['email_from_name'] ?? 'BLine Boutique'
     );
     
     // Test recipient (use your email or the SMTP username)

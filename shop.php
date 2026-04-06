@@ -27,7 +27,7 @@ $filterCategory = $_GET['filter'] ?? '';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shop All Products | Nazmi Boutique</title>
+    <title>Shop All Products | BLine Boutique</title>
     <link rel="icon" type="image/png" href="logo.png">
     <link rel="shortcut icon" type="image/png" href="logo.png">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -287,9 +287,9 @@ $filterCategory = $_GET['filter'] ?? '';
         <div class="container mx-auto px-12">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16 mb-24">
                 <div class="space-y-8">
-                    <h2 class="text-4xl font-serif font-black">NAZMI<span class="text-brand">.</span></h2>
+                    <h2 class="text-4xl font-serif font-black">BLine<span class="text-brand">.</span></h2>
                     <p class="text-slate-500 leading-relaxed font-medium">
-                        Designing for the bold, the elegant, and the authentic. Nazmi Boutique is your destination for premium artisanal apparel.
+                        Designing for the bold, the elegant, and the authentic. BLine Boutique is your destination for premium artisanal apparel.
                     </p>
                     <div class="flex gap-5">
                         <div class="w-12 h-12 rounded-full border border-slate-100 flex items-center justify-center hover:bg-brand hover:text-white transition-all cursor-pointer">
@@ -334,7 +334,7 @@ $filterCategory = $_GET['filter'] ?? '';
             </div>
 
             <div class="pt-12 border-t border-slate-100 flex flex-col md:flex-row justify-between items-center gap-8 text-[10px] font-black uppercase tracking-widest text-slate-400">
-                <p>© 2024 Nazmi Boutique International</p>
+                <p>© 2024 BLine Boutique International</p>
                 <div class="flex gap-4 opacity-40">
                     <img src="https://cdn-icons-png.flaticon.com/512/349/349221.png" alt="Visa" class="h-4">
                     <img src="https://cdn-icons-png.flaticon.com/512/349/349230.png" alt="Mastercard" class="h-4">

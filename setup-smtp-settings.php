@@ -21,7 +21,7 @@ try {
         'smtp_password' => 'Adnan@66202',
         'smtp_encryption' => 'ssl', // SSL for port 465
         'email_from_address' => 'mail@archizeon.com',
-        'email_from_name' => 'NAZMI BOUTIQUE',
+        'email_from_name' => 'BLine Boutique',
         'email_notifications_enabled' => '1',
         'email_order_confirmation' => '1',
         'email_shipping_updates' => '1',

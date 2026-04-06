@@ -122,7 +122,7 @@ function isMenuActive($menuItem, $currentPageParam) {
     <!-- Logo -->
     <div class="p-6 border-b border-gray-200">
         <a href="../index.php" class="flex items-center gap-2">
-            <h2 class="text-xl font-bold text-brand">NAZMI BOUTIQUE</h2>
+            <h2 class="text-xl font-bold text-brand">BLine Boutique</h2>
             <span class="text-xs text-gray-500 font-medium ml-1">Admin</span>
         </a>
     </div>

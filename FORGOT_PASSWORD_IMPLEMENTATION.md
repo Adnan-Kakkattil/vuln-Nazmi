@@ -47,7 +47,7 @@ The forgot password feature has been successfully implemented and tested. Email 
 - Username: `mail@archizeon.com`
 - Password: `Adnan@66202`
 - From: `mail@archizeon.com`
-- From Name: `NAZMI BOUTIQUE`
+- From Name: `BLine Boutique`
 
 ## ✅ Test Results
 

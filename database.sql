@@ -1,5 +1,5 @@
 -- ============================================================================
--- NAZMI BOUTIQUE - COMPLETE DATABASE SETUP (MySQL/MariaDB Compatible)
+-- BLine Boutique - COMPLETE DATABASE SETUP (MySQL/MariaDB Compatible)
 -- ============================================================================
 -- This file creates the complete database structure with:
 -- - All tables and relationships
@@ -10,8 +10,8 @@
 -- ============================================================================
 
 -- Create database (uncomment if needed)
--- CREATE DATABASE IF NOT EXISTS nazmi_boutique CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
--- USE nazmi_boutique;
+-- CREATE DATABASE IF NOT EXISTS bline_boutique CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+-- USE bline_boutique;
 
 -- Disable foreign key checks temporarily to avoid dependency issues
 SET FOREIGN_KEY_CHECKS = 0;
@@ -849,8 +849,8 @@ ON DUPLICATE KEY UPDATE name=name;
 -- Insert System Settings
 INSERT INTO system_settings (setting_key, setting_value, setting_type, description, category) VALUES
 -- General Settings
-('site_name', 'NAZMI BOUTIQUE', 'string', 'Website name', 'general'),
-('site_email', 'info@nazmiboutique.com', 'string', 'Contact email', 'general'),
+('site_name', 'BLine Boutique', 'string', 'Website name', 'general'),
+('site_email', 'info@blineboutique.com', 'string', 'Contact email', 'general'),
 ('site_phone', '+91 6238762189', 'string', 'Contact phone', 'general'),
 ('currency', 'INR', 'string', 'Default currency', 'general'),
 ('currency_symbol', '₹', 'string', 'Currency symbol', 'general'),
@@ -885,8 +885,8 @@ INSERT INTO system_settings (setting_key, setting_value, setting_type, descripti
 ('smtp_username', '', 'string', 'SMTP Username', 'email'),
 ('smtp_password', '', 'string', 'SMTP Password (encrypted)', 'email'),
 ('smtp_encryption', 'tls', 'string', 'SMTP Encryption (tls/ssl)', 'email'),
-('email_from_name', 'NAZMI BOUTIQUE', 'string', 'From Name for emails', 'email'),
-('email_from_address', 'noreply@nazmiboutique.com', 'string', 'From Email Address', 'email')
+('email_from_name', 'BLine Boutique', 'string', 'From Name for emails', 'email'),
+('email_from_address', 'noreply@blineboutique.com', 'string', 'From Email Address', 'email')
 ON DUPLICATE KEY UPDATE setting_value=VALUES(setting_value);
 
 -- ============================================================================

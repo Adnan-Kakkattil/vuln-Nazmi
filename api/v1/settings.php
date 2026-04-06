@@ -124,7 +124,7 @@ try {
             
             // General
             'general' => [
-                'site_name' => $result['site_name'] ?? 'NAZMI BOUTIQUE',
+                'site_name' => $result['site_name'] ?? 'BLine Boutique',
                 'site_email' => $result['site_email'] ?? '',
                 'site_phone' => $result['site_phone'] ?? '',
                 'currency' => $result['currency'] ?? 'INR',

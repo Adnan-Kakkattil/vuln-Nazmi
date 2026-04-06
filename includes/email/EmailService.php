@@ -7,9 +7,9 @@
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-$__nazmiAutoload = __DIR__ . '/../../vendor/autoload.php';
-if (is_file($__nazmiAutoload)) {
-    require_once $__nazmiAutoload;
+$__blineAutoload = __DIR__ . '/../../vendor/autoload.php';
+if (is_file($__blineAutoload)) {
+    require_once $__blineAutoload;
 }
 require_once __DIR__ . '/../config.php';
 
@@ -114,7 +114,7 @@ class EmailService {
             // From address - use provided email
             $this->mailer->setFrom(
                 $this->settings['email_from_address'] ?? 'mail@archizeon.com',
-                $this->settings['email_from_name'] ?? 'NAZMI BOUTIQUE'
+                $this->settings['email_from_name'] ?? 'BLine Boutique'
             );
             
             // Character set for proper encoding
@@ -270,7 +270,7 @@ class EmailService {
         $resetLink = $baseUrl . '/reset-password.php?token=' . urlencode($resetToken) . '&email=' . urlencode($to);
         $expiryTime = date('Y-m-d H:i:s', strtotime('+1 hour'));
         
-        $subject = 'Reset Your Password - NAZMI BOUTIQUE';
+        $subject = 'Reset Your Password - BLine Boutique';
         
         $body = $this->getForgotPasswordTemplate($userName, $resetLink, $expiryTime);
         $altBody = "Hello " . ($userName ?: 'there') . ",\n\n";
@@ -278,7 +278,7 @@ class EmailService {
         $altBody .= $resetLink . "\n\n";
         $altBody .= "This link will expire in 1 hour.\n\n";
         $altBody .= "If you didn't request this, please ignore this email.\n\n";
-        $altBody .= "Best regards,\nNAZMI BOUTIQUE";
+        $altBody .= "Best regards,\nBLine Boutique";
         
         return $this->send($to, $subject, $body, $altBody);
     }
@@ -290,13 +290,13 @@ class EmailService {
      * @return bool Success status
      */
     public function sendPasswordResetConfirmationEmail($to, $userName = '') {
-        $subject = 'Password Reset Successful - NAZMI BOUTIQUE';
+        $subject = 'Password Reset Successful - BLine Boutique';
         
         $body = $this->getPasswordResetConfirmationTemplate($userName);
         $altBody = "Hello " . ($userName ?: 'there') . ",\n\n";
         $altBody .= "Your password has been successfully reset.\n\n";
         $altBody .= "If you didn't make this change, please contact us immediately.\n\n";
-        $altBody .= "Best regards,\nNAZMI BOUTIQUE";
+        $altBody .= "Best regards,\nBLine Boutique";
         
         return $this->send($to, $subject, $body, $altBody);
     }
@@ -415,7 +415,7 @@ class EmailService {
 <body>
     <div class="email-container">
         <div class="email-header">
-            <h1>NAZMI<span style="color: #ffffff;">.</span></h1>
+            <h1>BLine<span style="color: #ffffff;">.</span></h1>
         </div>
         
         <div class="email-body">
@@ -424,7 +424,7 @@ class EmailService {
                 
                 <p>Hello ' . htmlspecialchars($name) . ',</p>
                 
-                <p>We received a request to reset your password for your NAZMI BOUTIQUE account. Click the button below to create a new password:</p>
+                <p>We received a request to reset your password for your BLine Boutique account. Click the button below to create a new password:</p>
                 
                 <div class="button-container">
                     <a href="' . htmlspecialchars($resetLink) . '" class="reset-button">RESET PASSWORD</a>
@@ -444,7 +444,7 @@ class EmailService {
         </div>
         
         <div class="email-footer">
-            <p><strong>NAZMI BOUTIQUE</strong></p>
+            <p><strong>BLine Boutique</strong></p>
             <p>Your trusted fashion destination</p>
             <p style="margin-top: 15px; font-size: 12px; color: #9ca3af;">
                 This is an automated email. Please do not reply to this message.
@@ -559,7 +559,7 @@ class EmailService {
 <body>
     <div class="email-container">
         <div class="email-header">
-            <h1>NAZMI<span style="color: #ffffff;">.</span></h1>
+            <h1>BLine<span style="color: #ffffff;">.</span></h1>
         </div>
         
         <div class="email-body">
@@ -576,7 +576,7 @@ class EmailService {
                 
                 <p>Hello ' . htmlspecialchars($name) . ',</p>
                 
-                <p>Your password has been successfully reset. You can now log in to your NAZMI BOUTIQUE account using your new password.</p>
+                <p>Your password has been successfully reset. You can now log in to your BLine Boutique account using your new password.</p>
                 
                 <div class="security-notice">
                     <p><strong>🔒 Security Notice:</strong> If you didn\'t make this change, please contact us immediately to secure your account.</p>
@@ -587,7 +587,7 @@ class EmailService {
         </div>
         
         <div class="email-footer">
-            <p><strong>NAZMI BOUTIQUE</strong></p>
+            <p><strong>BLine Boutique</strong></p>
             <p>Your trusted fashion destination</p>
             <p style="margin-top: 15px; font-size: 12px; color: #9ca3af;">
                 This is an automated email. Please do not reply to this message.
@@ -613,7 +613,7 @@ class EmailService {
             return false;
         }
         
-        $subject = 'Order Confirmation - ' . $orderData['order_number'] . ' | NAZMI BOUTIQUE';
+        $subject = 'Order Confirmation - ' . $orderData['order_number'] . ' | BLine Boutique';
         $body = $this->getOrderConfirmationTemplate($orderData, $orderItems, $customerName);
         $altBody = $this->getOrderConfirmationPlainText($orderData, $orderItems, $customerName);
         
@@ -629,10 +629,10 @@ class EmailService {
      */
     public function sendOrderNotificationToAdmin($orderData, $orderItems = [], $recipients = []) {
         if (empty($recipients)) {
-            $recipients = ['info@nazmiboutique.com', 'contact.adnanks@gmail.com'];
+            $recipients = ['info@blineboutique.com', 'contact.adnanks@gmail.com'];
         }
         
-        $subject = 'New Order Received - ' . $orderData['order_number'] . ' | NAZMI BOUTIQUE';
+        $subject = 'New Order Received - ' . $orderData['order_number'] . ' | BLine Boutique';
         $body = $this->getOrderAdminNotificationTemplate($orderData, $orderItems);
         $altBody = $this->getOrderAdminNotificationPlainText($orderData, $orderItems);
         
@@ -665,7 +665,7 @@ class EmailService {
             return false;
         }
         
-        $subject = 'Order Update - ' . $orderData['order_number'] . ' | NAZMI BOUTIQUE';
+        $subject = 'Order Update - ' . $orderData['order_number'] . ' | BLine Boutique';
         $body = $this->getOrderTrackingTemplate($orderData, $status, $trackingNumber, $customerName);
         $altBody = $this->getOrderTrackingPlainText($orderData, $status, $trackingNumber, $customerName);
         
@@ -686,7 +686,7 @@ class EmailService {
             return false;
         }
         
-        $subject = 'Order Cancelled - ' . $orderData['order_number'] . ' | NAZMI BOUTIQUE';
+        $subject = 'Order Cancelled - ' . $orderData['order_number'] . ' | BLine Boutique';
         $body = $this->getOrderCancellationTemplate($orderData, $reason, $customerName);
         $altBody = $this->getOrderCancellationPlainText($orderData, $reason, $customerName);
         
@@ -708,7 +708,7 @@ class EmailService {
             return false;
         }
         
-        $subject = 'Refund Processed - ' . $orderData['order_number'] . ' | NAZMI BOUTIQUE';
+        $subject = 'Refund Processed - ' . $orderData['order_number'] . ' | BLine Boutique';
         $body = $this->getOrderRefundTemplate($orderData, $refundAmount, $refundReason, $customerName);
         $altBody = $this->getOrderRefundPlainText($orderData, $refundAmount, $refundReason, $customerName);
         
@@ -729,7 +729,7 @@ class EmailService {
             return false;
         }
         
-        $subject = 'Refund Confirmed - ' . $orderData['order_number'] . ' | NAZMI BOUTIQUE';
+        $subject = 'Refund Confirmed - ' . $orderData['order_number'] . ' | BLine Boutique';
         $body = $this->getRefundConfirmationTemplate($orderData, $refundAmount, $customerName);
         $altBody = $this->getRefundConfirmationPlainText($orderData, $refundAmount, $customerName);
         
@@ -750,7 +750,7 @@ class EmailService {
             return false;
         }
         
-        $subject = 'Refund Request Update - ' . $orderData['order_number'] . ' | NAZMI BOUTIQUE';
+        $subject = 'Refund Request Update - ' . $orderData['order_number'] . ' | BLine Boutique';
         $body = $this->getRefundRejectionTemplate($orderData, $rejectionReason, $customerName);
         $altBody = $this->getRefundRejectionPlainText($orderData, $rejectionReason, $customerName);
         
@@ -982,7 +982,7 @@ class EmailService {
 <body>
     <div class="email-container">
         <div class="email-header">
-            <h1>NAZMI<span style="color: #ffffff;">.</span></h1>
+            <h1>BLine<span style="color: #ffffff;">.</span></h1>
         </div>
         
         <div class="email-body">
@@ -1062,7 +1062,7 @@ class EmailService {
         </div>
         
         <div class="email-footer">
-            <p><strong>NAZMI BOUTIQUE</strong></p>
+            <p><strong>BLine Boutique</strong></p>
             <p>Your trusted fashion destination</p>
             <p style="margin-top: 15px; font-size: 12px; color: #9ca3af;">
                 This is an automated email. Please do not reply to this message.
@@ -1111,7 +1111,7 @@ class EmailService {
         $text .= "Order Number: $orderNumber\n";
         $text .= "Total Amount: ₹$totalAmount\n\n";
         $text .= "We'll send you another email once your order ships.\n\n";
-        $text .= "Best regards,\nNAZMI BOUTIQUE";
+        $text .= "Best regards,\nBLine Boutique";
         
         return $text;
     }
@@ -1177,7 +1177,7 @@ class EmailService {
 <body>
     <div class="email-container">
         <div class="email-header" style="background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);">
-            <h1>NAZMI<span style="color: #ffffff;">.</span></h1>
+            <h1>BLine<span style="color: #ffffff;">.</span></h1>
         </div>
         
         <div class="email-body">
@@ -1295,7 +1295,7 @@ class EmailService {
         $text .= "Customer Email: $customerEmail\n";
         $text .= "Total Amount: ₹$totalAmount\n\n";
         $text .= "Please log in to the admin panel to process this order.\n\n";
-        $text .= "Best regards,\nNAZMI BOUTIQUE";
+        $text .= "Best regards,\nBLine Boutique";
         
         return $text;
     }
@@ -1334,7 +1334,7 @@ class EmailService {
 <body>
     <div class="email-container">
         <div class="email-header">
-            <h1>NAZMI<span style="color: #ffffff;">.</span></h1>
+            <h1>BLine<span style="color: #ffffff;">.</span></h1>
         </div>
         
         <div class="email-body">
@@ -1374,7 +1374,7 @@ class EmailService {
         $orderNumber = $orderData['order_number'] ?? 'N/A';
         return "Hello $customerName,\n\nYour order $orderNumber status has been updated to: $status" . 
                ($trackingNumber ? "\nTracking Number: $trackingNumber" : '') . 
-               "\n\nBest regards,\nNAZMI BOUTIQUE";
+               "\n\nBest regards,\nBLine Boutique";
     }
     
     /**
@@ -1404,7 +1404,7 @@ class EmailService {
 <body>
     <div class="email-container">
         <div class="email-header" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);">
-            <h1>NAZMI<span style="color: #ffffff;">.</span></h1>
+            <h1>BLine<span style="color: #ffffff;">.</span></h1>
         </div>
         
         <div class="email-body">
@@ -1446,7 +1446,7 @@ class EmailService {
         $orderNumber = $orderData['order_number'] ?? 'N/A';
         return "Hello $customerName,\n\nYour order $orderNumber has been cancelled." . 
                ($reason ? "\nReason: $reason" : '') . 
-               "\n\nBest regards,\nNAZMI BOUTIQUE";
+               "\n\nBest regards,\nBLine Boutique";
     }
     
     /**
@@ -1474,7 +1474,7 @@ class EmailService {
 <body>
     <div class="email-container">
         <div class="email-header" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
-            <h1>NAZMI<span style="color: #ffffff;">.</span></h1>
+            <h1>BLine<span style="color: #ffffff;">.</span></h1>
         </div>
         
         <div class="email-body">
@@ -1517,7 +1517,7 @@ class EmailService {
         $formattedAmount = number_format($refundAmount, 2);
         return "Hello $customerName,\n\nRefund of ₹$formattedAmount has been processed for order $orderNumber." . 
                ($reason ? "\nReason: $reason" : '') . 
-               "\n\nBest regards,\nNAZMI BOUTIQUE";
+               "\n\nBest regards,\nBLine Boutique";
     }
     
     /**
@@ -1553,7 +1553,7 @@ class EmailService {
 <body>
     <div class="email-container">
         <div class="email-header" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
-            <h1>NAZMI<span style="color: #ffffff;">.</span></h1>
+            <h1>BLine<span style="color: #ffffff;">.</span></h1>
         </div>
         
         <div class="email-body">
@@ -1588,7 +1588,7 @@ class EmailService {
         $orderNumber = $orderData['order_number'] ?? 'N/A';
         return "Hello $customerName,\n\nYour refund request for order $orderNumber could not be processed." . 
                ($reason ? "\nReason: $reason" : '') . 
-               "\n\nBest regards,\nNAZMI BOUTIQUE";
+               "\n\nBest regards,\nBLine Boutique";
     }
     
     /**
@@ -1765,7 +1765,7 @@ class EmailService {
      */
     private function getEmailFooter() {
         return '<div class="email-footer" style="background-color: #f9fafb; padding: 30px; text-align: center; border-top: 1px solid #e5e7eb;">
-            <p style="color: #6b7280; font-size: 14px; margin: 5px 0;"><strong>NAZMI BOUTIQUE</strong></p>
+            <p style="color: #6b7280; font-size: 14px; margin: 5px 0;"><strong>BLine Boutique</strong></p>
             <p style="color: #6b7280; font-size: 14px; margin: 5px 0;">Your trusted fashion destination</p>
             <p style="margin-top: 15px; font-size: 12px; color: #9ca3af;">
                 This is an automated email. Please do not reply to this message.

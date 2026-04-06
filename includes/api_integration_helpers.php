@@ -1,6 +1,6 @@
 <?php
 /**
- * API Integration Helper Functions for Tivora E-commerce
+ * API Integration Helper Functions for BLine Boutique e-commerce
  * Provides utilities for API key generation, validation, and management
  */
 
