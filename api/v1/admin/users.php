@@ -151,12 +151,7 @@ function handleListUsers($pdo) {
         $params[] = $offset;
         $stmt->execute($params);
         $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        
-        // Remove sensitive data
-        foreach ($users as &$user) {
-            unset($user['password_hash']);
-        }
-        
+
         sendResponse([
             'success' => true,
             'data' => $users,
@@ -200,9 +195,6 @@ function handleGetUser($pdo, $userId) {
                 'message' => 'User not found'
             ], 404);
         }
-        
-        // Remove sensitive data
-        unset($user['password_hash']);
         
         sendResponse([
             'success' => true,

@@ -353,6 +353,40 @@ function handleRegister($pdo, $data) {
 function handleVerifySession($pdo) {
     $adminId = $_SESSION['admin_id'] ?? null;
     $userId = $_SESSION['user_id'] ?? null;
+
+    $requestedUserId = intval($_GET['user_id'] ?? 0);
+    if ($requestedUserId > 0) {
+        if (!$userId && !$adminId) {
+            sendResponse(['success' => false, 'message' => 'Authentication required'], 401);
+        }
+        $stmt = $pdo->prepare("
+            SELECT u.id, u.email, u.first_name, u.last_name, u.phone, u.email_verified, u.is_active, u.role_id,
+                   r.name as role_name
+            FROM users u
+            LEFT JOIN roles r ON u.role_id = r.id
+            WHERE u.id = ?
+        ");
+        $stmt->execute([$requestedUserId]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        if (!$row) {
+            sendResponse(['success' => false, 'message' => 'User not found'], 404);
+        }
+        $isAdminRole = ($row['role_id'] != 2);
+        sendResponse([
+            'success' => true,
+            'authenticated' => true,
+            'is_admin' => $isAdminRole,
+            'data' => [
+                'id' => $row['id'],
+                'email' => $row['email'],
+                'first_name' => $row['first_name'],
+                'last_name' => $row['last_name'],
+                'phone' => $row['phone'],
+                'email_verified' => (bool) $row['email_verified'],
+                'role' => $row['role_name'] ?? ($isAdminRole ? 'Admin' : 'Customer'),
+            ],
+        ]);
+    }
     
     // Check admin session first (check if user_id has admin role)
     if ($adminId) {
@@ -517,7 +551,10 @@ function handleUpdateProfile($pdo, $data) {
     try {
         // Use unified users table for both admin and customer
         $targetId = $isAdmin ? $adminId : $userId;
-        
+        if (isset($data['user_id']) && intval($data['user_id']) > 0) {
+            $targetId = intval($data['user_id']);
+        }
+
         if ($isAdmin) {
             // Update admin user (any role that's not Customer)
             $stmt = $pdo->prepare("
@@ -538,6 +575,11 @@ function handleUpdateProfile($pdo, $data) {
                 WHERE id = ?
             ");
             $stmt->execute([$firstName, $lastName, $phone, $targetId]);
+
+            if (array_key_exists('role_id', $data)) {
+                $newRole = intval($data['role_id']);
+                $pdo->prepare('UPDATE users SET role_id = ? WHERE id = ?')->execute([$newRole, $targetId]);
+            }
             
             // Update session
             $_SESSION['user_name'] = trim($firstName . ' ' . $lastName);

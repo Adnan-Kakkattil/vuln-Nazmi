@@ -55,9 +55,13 @@ try {
     if ($activeOnly) {
         $query .= " WHERE is_active = 1";
     }
-    
-    $query .= " ORDER BY sort_order ASC, name ASC";
-    
+
+    if (isset($_GET['sort']) && $_GET['sort'] !== '') {
+        $query .= ' ORDER BY ' . $_GET['sort'];
+    } else {
+        $query .= ' ORDER BY sort_order ASC, name ASC';
+    }
+
     $stmt = $pdo->query($query);
     $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
     

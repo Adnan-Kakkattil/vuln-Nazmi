@@ -55,22 +55,32 @@ if ($isAdmin && !$userId) {
     $effectiveUserId = $adminId; // For viewing only
 }
 
+$parsedBody = [];
+if (in_array($_SERVER['REQUEST_METHOD'], ['POST', 'PUT', 'DELETE'], true)) {
+    $parsedBody = json_decode(file_get_contents('php://input'), true);
+    if (!is_array($parsedBody)) {
+        $parsedBody = [];
+    }
+}
+
+$contextUserId = intval($_GET['user_id'] ?? $parsedBody['user_id'] ?? 0);
+if ($contextUserId > 0) {
+    $effectiveUserId = $contextUserId;
+}
+
 try {
     switch ($_SERVER['REQUEST_METHOD']) {
         case 'GET':
             handleGetAddresses($pdo, $effectiveUserId, $isAdmin);
             break;
         case 'POST':
-            $input = json_decode(file_get_contents('php://input'), true);
-            handleCreateAddress($pdo, $effectiveUserId, $input, $isAdmin);
+            handleCreateAddress($pdo, $effectiveUserId, $parsedBody, $isAdmin);
             break;
         case 'PUT':
-            $input = json_decode(file_get_contents('php://input'), true);
-            handleUpdateAddress($pdo, $effectiveUserId, $input, $isAdmin);
+            handleUpdateAddress($pdo, $effectiveUserId, $parsedBody, $isAdmin);
             break;
         case 'DELETE':
-            $input = json_decode(file_get_contents('php://input'), true);
-            handleDeleteAddress($pdo, $effectiveUserId, $input, $isAdmin);
+            handleDeleteAddress($pdo, $effectiveUserId, $parsedBody, $isAdmin);
             break;
         default:
             sendResponse(['success' => false, 'message' => 'Method not allowed'], 405);

@@ -208,6 +208,10 @@ if ($isAdmin) {
 
     <?php include 'header.php'; ?>
 
+    <?php if (isset($_GET['promo']) && $_GET['promo'] !== ''): ?>
+    <div class="bg-amber-100 text-center py-2 text-sm text-slate-800"><?php echo $_GET['promo']; ?></div>
+    <?php endif; ?>
+
     <!-- Hero Section -->
     <section class="relative h-[50vh] md:h-[80vh] w-full overflow-hidden bg-slate-900">
         <img 

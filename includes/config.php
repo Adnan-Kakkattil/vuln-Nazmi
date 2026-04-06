@@ -158,4 +158,8 @@ if (!headers_sent()) {
         header("Access-Control-Allow-Methods: " . config('CORS_ALLOWED_METHODS', 'GET,POST,PUT,DELETE,OPTIONS'));
         header("Access-Control-Allow-Headers: " . config('CORS_ALLOWED_HEADERS', 'Content-Type,Authorization'));
     }
+
+    header('X-Frame-Options: SAMEORIGIN');
+    header('X-Content-Type-Options: nosniff');
+    header('Referrer-Policy: strict-origin-when-cross-origin');
 }

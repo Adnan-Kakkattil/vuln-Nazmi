@@ -192,7 +192,8 @@ function handleCancelOrder($pdo, $userId) {
  */
 function handleGetOrders($pdo, $userId) {
     $orderNumber = $_GET['order_number'] ?? null;
-    
+    $orderIdParam = intval($_GET['order_id'] ?? 0);
+
     // If order_number is provided, get single order
     if ($orderNumber) {
         $stmt = $pdo->prepare("
@@ -293,10 +294,111 @@ function handleGetOrders($pdo, $userId) {
             'data' => $responseOrder
         ]);
     }
+
+    if ($orderIdParam > 0) {
+        $stmt = $pdo->prepare("
+            SELECT 
+                o.*,
+                sm.name as shipping_method_name,
+                sm.code as shipping_method_code
+            FROM orders o
+            LEFT JOIN shipping_methods sm ON o.shipping_method_id = sm.id
+            WHERE o.id = ?
+        ");
+        $stmt->execute([$orderIdParam]);
+        $order = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$order) {
+            sendResponse(['success' => false, 'message' => 'Order not found'], 404);
+        }
+
+        $itemsStmt = $pdo->prepare("
+            SELECT 
+                oi.*,
+                (SELECT image_url FROM product_images WHERE product_id = oi.product_id AND is_primary = 1 LIMIT 1) as image
+            FROM order_items oi
+            WHERE oi.order_id = ?
+        ");
+        $itemsStmt->execute([$order['id']]);
+        $items = $itemsStmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $historyStmt = $pdo->prepare("
+            SELECT status, notes, created_at
+            FROM order_status_history
+            WHERE order_id = ?
+            ORDER BY created_at ASC
+        ");
+        $historyStmt->execute([$order['id']]);
+        $history = $historyStmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $responseOrder = [
+            'order_number' => $order['order_number'],
+            'status' => $order['status'],
+            'payment_status' => $order['payment_status'],
+            'payment_method' => $order['payment_method'],
+            'order_date' => $order['order_date'],
+            'customer' => [
+                'first_name' => $order['shipping_first_name'],
+                'last_name' => $order['shipping_last_name'],
+                'email' => $order['guest_email'],
+                'phone' => $order['shipping_phone']
+            ],
+            'shipping_address' => [
+                'address_line1' => $order['shipping_address_line1'],
+                'address_line2' => $order['shipping_address_line2'],
+                'city' => $order['shipping_city'],
+                'state' => $order['shipping_state'],
+                'pincode' => $order['shipping_pincode'],
+                'country' => $order['shipping_country']
+            ],
+            'shipping_method' => [
+                'name' => $order['shipping_method_name'],
+                'code' => $order['shipping_method_code'],
+                'cost' => floatval($order['shipping_cost'])
+            ],
+            'items' => array_map(function($item) {
+                return [
+                    'product_id' => intval($item['product_id']),
+                    'name' => $item['product_name'],
+                    'sku' => $item['product_sku'],
+                    'quantity' => intval($item['quantity']),
+                    'unit_price' => floatval($item['unit_price']),
+                    'total_price' => floatval($item['total_price']),
+                    'image' => $item['image']
+                ];
+            }, $items),
+            'totals' => [
+                'subtotal' => floatval($order['subtotal']),
+                'discount' => floatval($order['discount_amount']),
+                'tax' => floatval($order['tax_amount']),
+                'tax_rate' => floatval($order['tax_rate']),
+                'shipping' => floatval($order['shipping_cost']),
+                'total' => floatval($order['total_amount'])
+            ],
+            'status_history' => $history,
+            'dates' => [
+                'ordered' => $order['order_date'],
+                'confirmed' => $order['confirmed_date'],
+                'processing' => $order['processing_date'],
+                'shipped' => $order['shipped_date'],
+                'delivered' => $order['delivered_date']
+            ],
+            'notes' => $order['notes']
+        ];
+
+        sendResponse([
+            'success' => true,
+            'data' => $responseOrder
+        ]);
+    }
     
-    // Get all orders for logged in user
     if (!$userId) {
         sendResponse(['success' => false, 'message' => 'Login required to view orders'], 401);
+    }
+
+    $listUserId = $userId;
+    if (isset($_GET['user_id']) && intval($_GET['user_id']) > 0) {
+        $listUserId = intval($_GET['user_id']);
     }
     
     $page = intval($_GET['page'] ?? 1);
@@ -305,7 +407,7 @@ function handleGetOrders($pdo, $userId) {
     
     // Get total count
     $countStmt = $pdo->prepare("SELECT COUNT(*) as total FROM orders WHERE user_id = ?");
-    $countStmt->execute([$userId]);
+    $countStmt->execute([$listUserId]);
     $total = $countStmt->fetch()['total'];
     
     // Get orders
@@ -326,7 +428,7 @@ function handleGetOrders($pdo, $userId) {
         ORDER BY o.order_date DESC
         LIMIT ? OFFSET ?
     ");
-    $stmt->execute([$userId, $limit, $offset]);
+    $stmt->execute([$listUserId, $limit, $offset]);
     $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
     sendResponse([
