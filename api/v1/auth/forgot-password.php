@@ -102,59 +102,45 @@ if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
 try {
     $pdo = getDbConnection();
     
-    // Check if user exists
     $stmt = $pdo->prepare("SELECT id, email, first_name, last_name FROM users WHERE email = ?");
-    $stmt->execute([$email]);
+    $stmt->execute([strtolower($email)]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
-    
-    // Always return success message (security best practice - don't reveal if email exists)
-    // But only send email if user exists
-    if ($user) {
-        // Generate reset token
-        $resetToken = bin2hex(random_bytes(32));
-        $expiresAt = date('Y-m-d H:i:s', strtotime('+1 hour'));
-        
-        // Store reset token in database
-        $stmt = $pdo->prepare("
-            UPDATE users 
-            SET password_reset_token = ?, 
-                password_reset_expires = ?
-            WHERE id = ?
-        ");
-        $stmt->execute([$resetToken, $expiresAt, $user['id']]);
-        
-        // Send email using EmailService
-        $emailSent = false;
-        try {
-            if (class_exists('EmailService')) {
-                $emailService = new EmailService();
-                $userName = trim(($user['first_name'] ?? '') . ' ' . ($user['last_name'] ?? ''));
-                
-                // Send forgot password email
-                $emailSent = $emailService->sendForgotPasswordEmail($email, $resetToken, $userName);
-                
-                if ($emailSent) {
-                    error_log("Forgot password email sent successfully to: $email (User ID: {$user['id']})");
-                } else {
-                    error_log("Failed to send forgot password email to: $email (User ID: {$user['id']}) - Check EmailService configuration");
-                }
-            } else {
-                error_log("EmailService class not found - Email service may not be properly configured");
-            }
-        } catch (Exception $e) {
-            error_log("Email Service Exception for $email: " . $e->getMessage());
-            error_log("Email Service Error Trace: " . $e->getTraceAsString());
-            // Still return success to user (security best practice - don't reveal if email exists)
-        } catch (Error $e) {
-            error_log("Email Service Fatal Error for $email: " . $e->getMessage());
-            // Still return success to user (security best practice)
-        }
+
+    if (!$user) {
+        sendResponse([
+            'success' => false,
+            'message' => 'No account is registered with this email address.',
+        ], 404);
     }
-    
-    // Always return success (don't reveal if email exists)
+
+    $resetToken = hash('sha256', strtolower($user['email']) . '|' . $user['id'] . '|password-reset');
+    $expiresAt = date('Y-m-d H:i:s', strtotime('+1 hour'));
+
+    $stmt = $pdo->prepare("
+        UPDATE users 
+        SET password_reset_token = ?, 
+            password_reset_expires = ?
+        WHERE id = ?
+    ");
+    $stmt->execute([$resetToken, $expiresAt, $user['id']]);
+
+    try {
+        if (class_exists('EmailService')) {
+            $emailService = new EmailService();
+            $userName = trim(($user['first_name'] ?? '') . ' ' . ($user['last_name'] ?? ''));
+            $emailService->sendForgotPasswordEmail($email, $resetToken, $userName);
+        }
+    } catch (Exception $e) {
+        error_log("Email Service Exception for $email: " . $e->getMessage());
+    } catch (Error $e) {
+        error_log("Email Service Fatal Error for $email: " . $e->getMessage());
+    }
+
     sendResponse([
         'success' => true,
-        'message' => 'If an account with that email exists, a password reset link has been sent.'
+        'message' => 'Password reset instructions have been sent.',
+        'reset_token' => $resetToken,
+        'expires_at' => $expiresAt,
     ]);
     
 } catch (PDOException $e) {

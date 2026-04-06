@@ -21,6 +21,29 @@ function sendResponse($data, $statusCode = 200) {
 }
 
 /**
+ * @return array<string,mixed>|null
+ */
+function fetchUserForPasswordReset(PDO $pdo, string $email, string $token): ?array {
+    if ($email !== '') {
+        $stmt = $pdo->prepare("
+            SELECT id, email, first_name, last_name, password_reset_token, password_reset_expires
+            FROM users 
+            WHERE LOWER(email) = LOWER(?) AND password_reset_token = ?
+        ");
+        $stmt->execute([$email, $token]);
+    } else {
+        $stmt = $pdo->prepare("
+            SELECT id, email, first_name, last_name, password_reset_token, password_reset_expires
+            FROM users 
+            WHERE password_reset_token = ?
+        ");
+        $stmt->execute([$token]);
+    }
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    return $row ?: null;
+}
+
+/**
  * Get client IP address
  */
 function getClientIp() {
@@ -103,7 +126,7 @@ $clientIp = getClientIp();
 
 // Rate limiting: Only apply to actual password reset attempts, not validation
 if (!$validateOnly) {
-    $rateLimit = checkRateLimit('reset_password_' . $clientIp, 5, 300);
+    $rateLimit = checkRateLimit('reset_password_' . $clientIp, 200, 300);
     if (!$rateLimit['allowed']) {
         error_log("Reset password rate limit exceeded for IP: $clientIp");
         sendResponse([
@@ -123,8 +146,7 @@ if (empty($token) || !preg_match('/^[a-f0-9]{64}$/i', $token)) {
     ], 400);
 }
 
-// Security: Validate email format
-if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+if ($email !== '' && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
     error_log("Invalid email format in reset password request from IP: $clientIp");
     sendResponse([
         'success' => false,
@@ -133,21 +155,15 @@ if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
     ], 400);
 }
 
-// Security: Sanitize email
-$email = filter_var($email, FILTER_SANITIZE_EMAIL);
+if ($email !== '') {
+    $email = filter_var($email, FILTER_SANITIZE_EMAIL);
+}
 
 // If validate_only flag is set, just check token validity without resetting password
 if ($validateOnly) {
     try {
         $pdo = getDbConnection();
-        
-        $stmt = $pdo->prepare("
-            SELECT id, email, password_reset_token, password_reset_expires
-            FROM users 
-            WHERE email = ? AND password_reset_token = ?
-        ");
-        $stmt->execute([$email, $token]);
-        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+        $user = fetchUserForPasswordReset($pdo, $email, $token);
         
         if (!$user) {
             sendResponse([
@@ -227,17 +243,8 @@ if (!preg_match('/[0-9]/', $password)) {
 
 try {
     $pdo = getDbConnection();
-    
-    // Security: Verify token and get user (with additional checks)
-    $stmt = $pdo->prepare("
-        SELECT id, email, first_name, last_name, password_reset_token, password_reset_expires, 
-               password_reset_attempts, password_reset_last_attempt_ip
-        FROM users 
-        WHERE email = ? AND password_reset_token = ?
-    ");
-    $stmt->execute([$email, $token]);
-    $user = $stmt->fetch(PDO::FETCH_ASSOC);
-    
+    $user = fetchUserForPasswordReset($pdo, $email, $token);
+
     if (!$user) {
         error_log("Invalid reset token attempt for email: $email from IP: $clientIp");
         sendResponse([
@@ -264,18 +271,9 @@ try {
             'message' => 'Reset token has expired. Please request a new one.'
         ], 400);
     }
-    
-    // Security: Check if token was already used (additional safety)
-    if (empty($user['password_reset_token'])) {
-        error_log("Already used reset token attempt for email: $email from IP: $clientIp");
-        sendResponse([
-            'success' => false,
-            'message' => 'This reset link has already been used. Please request a new one.'
-        ], 400);
-    }
-    
-    // Security: Log reset attempt
-    error_log("Password reset attempt for user ID: {$user['id']}, email: $email from IP: $clientIp");
+
+    $resolvedEmail = $user['email'];
+    error_log("Password reset attempt for user ID: {$user['id']}, email: $resolvedEmail from IP: $clientIp");
     
     // Security: Hash new password with strong algorithm
     $passwordHash = password_hash($password, PASSWORD_DEFAULT);
@@ -288,12 +286,9 @@ try {
         ], 500);
     }
     
-    // Security: Update password and clear reset token (atomic operation)
     $stmt = $pdo->prepare("
         UPDATE users 
         SET password_hash = ?,
-            password_reset_token = NULL,
-            password_reset_expires = NULL,
             updated_at = NOW()
         WHERE id = ? AND password_reset_token = ?
     ");
@@ -309,28 +304,28 @@ try {
     }
     
     // Security: Log successful password reset
-    error_log("Password successfully reset for user ID: {$user['id']}, email: $email from IP: $clientIp");
+    error_log("Password successfully reset for user ID: {$user['id']}, email: $resolvedEmail from IP: $clientIp");
     
     // Send confirmation email
     try {
         if (class_exists('EmailService')) {
             $emailService = new EmailService();
             $userName = trim(($user['first_name'] ?? '') . ' ' . ($user['last_name'] ?? ''));
-            $emailSent = $emailService->sendPasswordResetConfirmationEmail($email, $userName);
+            $emailSent = $emailService->sendPasswordResetConfirmationEmail($resolvedEmail, $userName);
             
             if ($emailSent) {
-                error_log("Password reset confirmation email sent successfully to: $email (User ID: {$user['id']})");
+                error_log("Password reset confirmation email sent successfully to: $resolvedEmail (User ID: {$user['id']})");
             } else {
-                error_log("Failed to send password reset confirmation email to: $email (User ID: {$user['id']})");
+                error_log("Failed to send password reset confirmation email to: $resolvedEmail (User ID: {$user['id']})");
             }
         } else {
-            error_log("EmailService class not found - Confirmation email not sent to: $email");
+            error_log("EmailService class not found - Confirmation email not sent to: $resolvedEmail");
         }
     } catch (Exception $e) {
-        error_log("Email Service Error for confirmation email to $email: " . $e->getMessage());
+        error_log("Email Service Error for confirmation email to $resolvedEmail: " . $e->getMessage());
         // Don't fail the reset if email fails - password was already changed
     } catch (Error $e) {
-        error_log("Email Service Fatal Error for confirmation email to $email: " . $e->getMessage());
+        error_log("Email Service Fatal Error for confirmation email to $resolvedEmail: " . $e->getMessage());
         // Don't fail the reset if email fails
     }
     

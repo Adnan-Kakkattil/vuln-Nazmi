@@ -7,7 +7,10 @@
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-require_once __DIR__ . '/../../vendor/autoload.php';
+$__nazmiAutoload = __DIR__ . '/../../vendor/autoload.php';
+if (is_file($__nazmiAutoload)) {
+    require_once $__nazmiAutoload;
+}
 require_once __DIR__ . '/../config.php';
 
 class EmailService {
@@ -16,12 +19,14 @@ class EmailService {
     
     public function __construct() {
         try {
+            if (!class_exists(PHPMailer::class)) {
+                throw new \RuntimeException('PHPMailer not available (run composer install)');
+            }
             $this->mailer = new PHPMailer(true);
             $this->loadSettings();
             $this->configureMailer();
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             error_log("EmailService Constructor Error: " . $e->getMessage());
-            // Don't throw - allow service to be created but mark as unavailable
             $this->settings = [];
         }
     }

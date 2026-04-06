@@ -120,6 +120,41 @@ $o2 = j($r['body']);
 $orderIdOk = ($r['code'] === 404 || $r['code'] === 200);
 echo '[9] Order detail ?order_id=1 (no session): ' . ($orderIdOk ? 'PASS' : 'FAIL') . " (HTTP {$r['code']})\n";
 
+// 10) Forgot password — user enumeration (unknown email)
+$r = http('POST', rtrim($base, '/') . '/api/v1/auth/forgot-password.php', json_encode(['email' => 'nobody_' . bin2hex(random_bytes(2)) . '@example.com']), '');
+$enumOk = ($r['code'] === 404);
+echo '[10] Forgot unknown email => 404: ' . ($enumOk ? 'PASS' : 'FAIL') . " (HTTP {$r['code']})\n";
+
+// 11) Forgot password — token in response + predictable hash
+$r = http('POST', rtrim($base, '/') . '/api/v1/auth/forgot-password.php', json_encode(['email' => $email]), '');
+$fp = j($r['body']);
+$expectedHash = hash('sha256', strtolower($email) . '|' . $myId . '|password-reset');
+$fpOk = ($r['code'] === 200 && !empty($fp['reset_token']) && hash_equals($expectedHash, $fp['reset_token']));
+echo '[11] Forgot leak + predictable token: ' . ($fpOk ? 'PASS' : 'FAIL') . " (HTTP {$r['code']})\n";
+
+$resetTok = $fp['reset_token'] ?? '';
+$newPw = 'NewPass456!';
+
+// 12) Reset with token only (no email)
+$r = http('POST', rtrim($base, '/') . '/api/v1/auth/reset-password.php', json_encode([
+    'token' => $resetTok,
+    'password' => $newPw,
+    'confirm_password' => $newPw,
+]), '');
+$rs = j($r['body']);
+$rsOk = ($r['code'] === 200 && !empty($rs['success']));
+echo '[12] Reset password token-only: ' . ($rsOk ? 'PASS' : 'FAIL') . " (HTTP {$r['code']})\n";
+
+// 13) Reuse same token (second reset)
+$r = http('POST', rtrim($base, '/') . '/api/v1/auth/reset-password.php', json_encode([
+    'token' => $resetTok,
+    'password' => $pass,
+    'confirm_password' => $pass,
+]), '');
+$rs2 = j($r['body']);
+$reuseOk = ($r['code'] === 200 && !empty($rs2['success']));
+echo '[13] Reset token reuse: ' . ($reuseOk ? 'PASS' : 'FAIL') . " (HTTP {$r['code']})\n";
+
 @unlink($cookieFile);
 
 echo "\nDone.\n";
